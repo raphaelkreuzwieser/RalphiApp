@@ -100,6 +100,8 @@
         
         .btn-whatsapp { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; }
         .btn-whatsapp:hover { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; }
+        .btn-denkandich { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); color: white; }
+        .btn-denkandich:hover { background: linear-gradient(135deg, #db2777 0%, #ec4899 100%); color: white; transform: scale(1.08); }
         
         .btn-emergency {
             background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
@@ -275,6 +277,42 @@
         .user-btn.raphy { background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%); color: white; }
         .user-btn.kathi { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); color: white; }
         .user-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4); }
+
+        /* LOGIN */
+        .login-screen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.98);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; flex-direction: column; gap: 24px; padding: 20px;
+        }
+        .login-screen.hidden { display: none; }
+        .login-logo {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4); overflow: hidden;
+        }
+        .login-logo img { width: 100%; height: 100%; object-fit: contain; }
+        .login-screen h2 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .login-box { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
+        .login-box input {
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px; padding: 14px 16px;
+            color: #cbd5e1; font-size: 16px; outline: none; text-align: center;
+        }
+        .login-box input:focus { border-color: rgba(99, 102, 241, 0.5); }
+        .login-box button {
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            border: none; border-radius: 12px; color: white;
+            padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;
+        }
+        .login-box button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4); }
+        .login-error { color: #ef4444; font-size: 13px; min-height: 18px; text-align: center; }
         
         /* MODALS */
         .modal {
@@ -358,7 +396,19 @@
         </div>
     </div>
 
-    <div class="user-selector" id="userSelector">
+    <div class="login-screen" id="loginScreen">
+        <div class="login-logo">
+            <img src="ralphiapp-logo.png" alt="Logo" onerror="this.style.display='none'">
+        </div>
+        <h2>🔐 RalphiApp Login</h2>
+        <div class="login-box">
+            <input type="password" id="loginInput" placeholder="Passwort eingeben..." autocomplete="off">
+            <button onclick="checkLogin()">Einloggen</button>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <div class="user-selector hidden" id="userSelector">
         <h2>👋 Wer bist du?</h2>
         <div class="user-buttons">
             <button class="user-btn raphy" onclick="selectUser('raphy')">🔥 Raphy</button>
@@ -373,9 +423,12 @@
                     <img src="ralphiapp-logo.png" alt="Logo" onerror="this.parentElement.innerHTML='R'">
                 </div>
                 <button class="btn-sidebar active" data-tab="chat" title="Chat">💬</button>
+                <button class="btn-sidebar" data-tab="termine" title="Termine">📅</button>
                 <button class="btn-sidebar" data-tab="locations" title="Standorte">📍</button>
                 <button class="btn-sidebar" data-tab="todos" title="Aufgaben">📋</button>
-                <button class="btn-sidebar btn-whatsapp" onclick="openWhatsApp()" title="WhatsApp">💚</button>
+                <button class="btn-sidebar" data-tab="bier" title="Bierkalender">🍺</button>
+                <button class="btn-sidebar btn-denkandich" onclick="denkAnDich()" title="Denk an dich">🧠</button>
+                <button class="btn-sidebar btn-whatsapp" onclick="openWhatsApp()" title="WhatsApp"><svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button>
                 <button class="btn-sidebar btn-emergency sidebar-spacer" onclick="showPhoneDialog()" title="Notruf">🚨</button>
             </div>
 
@@ -392,6 +445,7 @@
                     <div id="chat-tab" class="tab-content active">
                         <div class="chat-area" id="chatArea"></div>
                         <div class="chat-input">
+                            <button id="clearChatBtn" onclick="clearChat()" title="Chat leeren" style="background:rgba(239,68,68,0.2);color:#ef4444;">🧹</button>
                             <input type="text" id="messageInput" placeholder="Schreib mir..." autocomplete="off">
                             <button id="sendBtn">➤</button>
                         </div>
@@ -417,6 +471,21 @@
                             </div>
                             <div class="todos-list" id="todosList"></div>
                         </div>
+                    </div>
+
+                    <div id="termine-tab" class="tab-content">
+                        <div class="todos-container">
+                            <div class="todos-input">
+                                <input type="text" id="termineText" placeholder="Termin (z.B. Kino, Mama Geburtstag)">
+                                <input type="datetime-local" id="termineDate" style="background:rgba(148,163,184,0.1);border:1px solid rgba(148,163,184,0.2);border-radius:10px;padding:12px;color:#cbd5e1;font-size:15px;outline:none;">
+                                <button class="todos-btn" onclick="addTermin()">➕ Termin hinzufügen</button>
+                            </div>
+                            <div class="todos-list" id="termineList"></div>
+                        </div>
+                    </div>
+
+                    <div id="bier-tab" class="tab-content">
+                        <iframe src="https://kalender.digital/85c7a24cbf852a959ad1?iframe=true" style="width:100%;height:100%;border:none;border-radius:12px;background:#fff;" frameborder="0"></iframe>
                     </div>
                 </div>
             </div>
@@ -467,16 +536,22 @@
         const db = firebase.database();
 
         // ===== STATE =====
+        const APP_PASSWORD = "ralphi2026"; // <-- HIER Passwort ändern
         const USE_FUNCTION = true; // Chat läuft über sichere Netlify Function
         let currentUser = localStorage.getItem('ralphiapp_user') || null;
+        let loggedIn = localStorage.getItem('ralphiapp_loggedin') === 'yes';
         let apiKey = localStorage.getItem('ralphiapp_api_key') || '';
         let messages = [];
         let locations = [];
         let todos = [];
+        let termine = [];
         let isSending = false;
 
         // ===== DOM =====
         const splash = document.getElementById('splash');
+        const loginScreen = document.getElementById('loginScreen');
+        const loginInput = document.getElementById('loginInput');
+        const loginError = document.getElementById('loginError');
         const userSelector = document.getElementById('userSelector');
         const userBadge = document.getElementById('userBadge');
         const headerTitle = document.getElementById('headerTitle');
@@ -490,6 +565,33 @@
         const todosList = document.getElementById('todosList');
         const tabButtons = document.querySelectorAll('[data-tab]');
         const tabs = document.querySelectorAll('.tab-content');
+
+        // ===== LOGIN =====
+        function checkLogin() {
+            if (loginInput.value === APP_PASSWORD) {
+                loggedIn = true;
+                localStorage.setItem('ralphiapp_loggedin', 'yes');
+                loginScreen.classList.add('hidden');
+                showAfterLogin();
+            } else {
+                loginError.textContent = '❌ Falsches Passwort';
+                loginInput.value = '';
+            }
+        }
+        if (loginInput) {
+            loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkLogin(); });
+        }
+
+        function showAfterLogin() {
+            // Nach Login: entweder direkt rein (User bekannt) oder User-Auswahl
+            if (currentUser) {
+                userSelector.classList.add('hidden');
+                updateUserBadge();
+                setupFirebaseSync();
+            } else {
+                userSelector.classList.remove('hidden');
+            }
+        }
 
         // ===== FIREBASE REALTIME SYNC =====
         // Hört live auf Änderungen - egal ob von Raphy oder Kathi
@@ -512,6 +614,22 @@
                     .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
                 renderTodos();
             });
+            db.ref('termine').on('value', (snap) => {
+                const val = snap.val() || {};
+                termine = Object.keys(val).map(k => ({ _key: k, ...val[k] }))
+                    .sort((a, b) => (a.when || '').localeCompare(b.when || ''));
+                renderTermine();
+            });
+            // "Denk an dich" - hört auf neue Gedanken vom Partner
+            db.ref('gedanken').on('child_added', (snap) => {
+                const g = snap.val();
+                if (!g) return;
+                // Nur anzeigen wenn vom Partner und frisch (letzte 60 Sek)
+                if (g.from !== currentUser && Date.now() - (g.timestamp || 0) < 60000) {
+                    const fromLabel = g.from === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+                    showToast('🧠 ' + fromLabel + ' denkt an dich! 💕', 'success');
+                }
+            });
         }
 
         // ===== USER =====
@@ -528,14 +646,17 @@
         }
 
         // ===== INIT =====
-        if (currentUser) {
-            userSelector.classList.add('hidden');
-            setTimeout(() => { splash.classList.add('hidden'); updateUserBadge(); setupFirebaseSync(); }, 1500);
-        } else {
-            setTimeout(() => { splash.classList.add('hidden'); }, 1500);
-        }
+        setTimeout(() => {
+            splash.classList.add('hidden');
+            if (loggedIn) {
+                loginScreen.classList.add('hidden');
+                showAfterLogin();
+            } else {
+                loginScreen.classList.remove('hidden');
+            }
+        }, 1500);
 
-        function renderAll() { renderChat(); renderLocations(); renderTodos(); }
+        function renderAll() { renderChat(); renderLocations(); renderTodos(); renderTermine(); }
 
         // ===== TABS =====
         tabButtons.forEach(btn => {
@@ -548,6 +669,8 @@
                 if (tabName === 'chat') { headerTitle.textContent = '💬 Chat'; setTimeout(() => chatArea.scrollTop = chatArea.scrollHeight, 0); }
                 else if (tabName === 'locations') headerTitle.textContent = '📍 Standorte';
                 else if (tabName === 'todos') headerTitle.textContent = '📋 Aufgaben';
+                else if (tabName === 'termine') headerTitle.textContent = '📅 Termine';
+                else if (tabName === 'bier') headerTitle.textContent = '🍺 Bierkalender';
             });
         });
 
@@ -633,6 +756,14 @@
 
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !isSending) sendMessage(); });
+
+        // Nur den Chat leeren (Standorte & Todos bleiben)
+        function clearChat() {
+            if (confirm('🧹 Chat-Verlauf leeren? (Standorte & Aufgaben bleiben)')) {
+                db.ref('messages').remove();
+                showToast('✅ Chat geleert!', 'success');
+            }
+        }
 
         // ===== WHATSAPP & PHONE =====
         function openWhatsApp() {
@@ -767,6 +898,55 @@
         function toggleTodo(key, done) { db.ref('todos/' + key + '/done').set(done); }
         function deleteTodo(key) { db.ref('todos/' + key).remove(); }
         todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTodo(); });
+
+        // ===== TERMINE =====
+        function renderTermine() {
+            const list = document.getElementById('termineList');
+            if (!list) return;
+            list.innerHTML = '';
+            if (termine.length === 0) { list.innerHTML = '<div class="empty-state">📅 Keine Termine eingetragen</div>'; return; }
+            const now = new Date();
+            termine.forEach((t) => {
+                const div = document.createElement('div');
+                const dt = t.when ? new Date(t.when) : null;
+                const past = dt && dt < now;
+                div.className = 'todo-card' + (past ? ' done' : '');
+                const userLabel = t.user === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+                let dateStr = '';
+                if (dt) {
+                    dateStr = dt.toLocaleString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+                }
+                div.innerHTML = `
+                    <div style="display:flex;flex:1;flex-direction:column;">
+                        <div class="todo-text">📅 ${t.text}</div>
+                        <div style="color:#06b6d4;font-size:13px;margin-top:2px;">${dateStr}</div>
+                        <div class="user-info">von ${userLabel}</div>
+                    </div>
+                    <button class="todo-delete" onclick="deleteTermin('${t._key}')">🗑️</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function addTermin() {
+            const text = document.getElementById('termineText').value.trim();
+            const when = document.getElementById('termineDate').value;
+            if (!text) { showToast('Bitte Termin-Text eingeben!', 'error'); return; }
+            if (!when) { showToast('Bitte Datum + Uhrzeit wählen!', 'error'); return; }
+            db.ref('termine').push({ text, when, user: currentUser, timestamp: Date.now() });
+            document.getElementById('termineText').value = '';
+            document.getElementById('termineDate').value = '';
+            showToast('✅ Termin gespeichert!', 'success');
+        }
+
+        function deleteTermin(key) { db.ref('termine/' + key).remove(); }
+
+        // ===== DENK AN DICH =====
+        function denkAnDich() {
+            db.ref('gedanken').push({ from: currentUser, timestamp: Date.now() });
+            const partner = currentUser === 'raphy' ? '💜 Kathi' : '🔥 Raphy';
+            showToast('🧠 ' + partner + ' weiß jetzt, dass du an sie/ihn denkst! 💕', 'success');
+        }
     </script>
 </body>
 </html>
