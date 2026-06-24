@@ -143,6 +143,14 @@
             color: #cbd5e1; font-size: 18px; cursor: pointer; transition: all 0.3s;
         }
         .btn-settings:hover { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .gedanke-banner {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(244, 114, 182, 0.15) 100%);
+            border-bottom: 1px solid rgba(236, 72, 153, 0.3);
+            color: #f9a8d4; padding: 12px 20px; font-size: 14px; font-weight: 600;
+            text-align: center; cursor: pointer; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .gedanke-banner:hover { background: linear-gradient(135deg, rgba(236, 72, 153, 0.35) 0%, rgba(244, 114, 182, 0.2) 100%); }
         
         .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
         .tab-content { display: none; flex: 1; overflow: hidden; min-height: 0; }
@@ -441,6 +449,8 @@
                     </div>
                 </div>
 
+                <div id="gedankeBanner" class="gedanke-banner" style="display:none;" onclick="dismissGedanke()"></div>
+
                 <div class="content">
                     <div id="chat-tab" class="tab-content active">
                         <div class="chat-area" id="chatArea"></div>
@@ -635,6 +645,11 @@
                     showToast('🧠 ' + fromLabel + ' denkt an dich! 💕', 'success');
                 }
             });
+            // Letzter Gedanke - wird als Banner angezeigt (auch wenn man's live verpasst hat)
+            db.ref('letzterGedanke').on('value', (snap) => {
+                const g = snap.val();
+                renderGedankeBanner(g);
+            });
         }
 
         // ===== USER =====
@@ -649,6 +664,8 @@
             } else {
                 // Schon synchronisiert - nur Ansicht aktualisieren (eigene/fremde Nachrichten)
                 renderAll();
+                // Banner neu bewerten (Gedanke vom neuen Partner?)
+                db.ref('letzterGedanke').once('value').then(snap => renderGedankeBanner(snap.val()));
             }
         }
 
@@ -958,9 +975,37 @@
 
         // ===== DENK AN DICH =====
         function denkAnDich() {
-            db.ref('gedanken').push({ from: currentUser, timestamp: Date.now() });
+            const now = Date.now();
+            db.ref('gedanken').push({ from: currentUser, timestamp: now });
+            // Letzten Gedanken speichern (bleibt erhalten bis zum nächsten)
+            db.ref('letzterGedanke').set({ from: currentUser, timestamp: now });
             const partner = currentUser === 'raphy' ? '💜 Kathi' : '🔥 Raphy';
             showToast('🧠 ' + partner + ' weiß jetzt, dass du an sie/ihn denkst! 💕', 'success');
+        }
+
+        let dismissedGedanke = 0;
+        function renderGedankeBanner(g) {
+            const banner = document.getElementById('gedankeBanner');
+            if (!banner || !g || !g.from) { if (banner) banner.style.display = 'none'; return; }
+            // Nur Gedanken vom PARTNER anzeigen (nicht die eigenen)
+            if (g.from === currentUser) { banner.style.display = 'none'; return; }
+            // Wenn schon weggeklickt, nicht nochmal zeigen
+            if (g.timestamp <= dismissedGedanke) { banner.style.display = 'none'; return; }
+            const fromLabel = g.from === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+            const d = new Date(g.timestamp);
+            const heute = new Date().toDateString() === d.toDateString();
+            const zeit = heute
+                ? 'heute um ' + d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' })
+                : 'am ' + d.toLocaleDateString('de-AT', { day: '2-digit', month: '2-digit' }) + ' um ' + d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' });
+            banner.innerHTML = '🧠💕 ' + fromLabel + ' hat ' + zeit + ' an dich gedacht! <span style="opacity:0.6;font-size:12px;">(tippen zum Ausblenden)</span>';
+            banner.style.display = 'flex';
+            lastGedankeTimestamp = g.timestamp;
+        }
+
+        let lastGedankeTimestamp = 0;
+        function dismissGedanke() {
+            dismissedGedanke = lastGedankeTimestamp;
+            document.getElementById('gedankeBanner').style.display = 'none';
         }
     </script>
 </body>
