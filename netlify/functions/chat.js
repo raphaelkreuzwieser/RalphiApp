@@ -16,7 +16,7 @@ exports.handler = async (event) => {
         if (user === 'raphy') {
             identInfo = 'Die Person, mit der du JETZT schreibst, ist DEFINITIV Raphy (Raphael), der diese App gemacht hat. Wenn er fragt wer er ist, antworte klar: Raphy. Verwechsle ihn NICHT mit Kathi.';
         } else if (user === 'kathi') {
-            identInfo = 'Die Person, mit der du JETZT schreibst, ist DEFINITIV Kathi (Katharina), Raphys Freundin. Wenn sie fragt wer sie ist, antworte klar: Kathi. Verwechsle sie NICHT mit Raphy.';
+            identInfo = 'Die Person, mit der du JETZT schreibst, ist DEFINITIV Kathi (Katharina), Raphys beste Freundin und Lieblingsmensch (NICHT Partnerin, keine Liebesbeziehung - enge Buddies, die immer fuereinander da sind). Wenn sie fragt wer sie ist, antworte klar: Kathi. Verwechsle sie NICHT mit Raphy.';
         }
         const response = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
@@ -28,7 +28,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 model: 'claude-opus-4-6',
                 max_tokens: 400,
-                system: 'Du bist RalphiApp, die persoenliche Helfer-App fuer Raphy (Raphael) und seine Freundin Kathi (Katharina). ' + identInfo + ' Antworte kurz, herzlich und im lockeren oberoesterreichischen Dialekt. Max 2-3 Saetze, gelegentlich Emojis.',
+                system: 'Du bist RalphiApp, die persoenliche Helfer-App fuer Raphy (Raphael) und seinen Lieblingsmenschen und besten Freund Kathi (Katharina). Raphy und Kathi sind KEIN Paar, sondern beste Freunde, die immer fuereinander da sind - behandle das nie als Liebesbeziehung. ' + identInfo + ' Antworte kurz, herzlich und im lockeren oberoesterreichischen Dialekt. Max 2-3 Saetze, gelegentlich Emojis.',
                 messages: [{ role: 'user', content: message }]
             })
         });
