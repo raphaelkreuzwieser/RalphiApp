@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#6366f1">
     <title>RalphiApp</title>
     <link rel="icon" type="image/png" href="ralphiapp-logo.png">
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -454,6 +456,19 @@
     </div>
 
     <script>
+        // ===== FIREBASE SETUP =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyAH2S9U8A3fxKQEnhwduILkKWRXBCoALeM",
+            authDomain: "ralphiapp.firebaseapp.com",
+            databaseURL: "https://ralphiapp-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "ralphiapp",
+            storageBucket: "ralphiapp.firebasestorage.app",
+            messagingSenderId: "570495393814",
+            appId: "1:570495393814:web:e3e3f948f078ab15755537"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         // ===== STATE =====
         let currentUser = localStorage.getItem('ralphiapp_user') || null;
         let apiKey = localStorage.getItem('ralphiapp_api_key') || '';
@@ -479,23 +494,27 @@
         const tabButtons = document.querySelectorAll('[data-tab]');
         const tabs = document.querySelectorAll('.tab-content');
 
-        // ===== STORAGE =====
-        function loadData() {
-            try {
-                const saved = localStorage.getItem('ralphiapp_data');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    messages = data.messages || [];
-                    locations = data.locations || [];
-                    todos = data.todos || [];
-                }
-            } catch (e) { console.error('Load error:', e); }
-        }
-
-        function saveData() {
-            try {
-                localStorage.setItem('ralphiapp_data', JSON.stringify({ messages, locations, todos }));
-            } catch (e) { console.error('Save error:', e); alert('⚠️ Speicher-Fehler'); }
+        // ===== FIREBASE REALTIME SYNC =====
+        // Hört live auf Änderungen - egal ob von Raphy oder Kathi
+        function setupFirebaseSync() {
+            db.ref('messages').on('value', (snap) => {
+                const val = snap.val() || {};
+                messages = Object.keys(val).map(k => ({ _key: k, ...val[k] }))
+                    .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                renderChat();
+            });
+            db.ref('locations').on('value', (snap) => {
+                const val = snap.val() || {};
+                locations = Object.keys(val).map(k => ({ _key: k, ...val[k] }))
+                    .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                renderLocations();
+            });
+            db.ref('todos').on('value', (snap) => {
+                const val = snap.val() || {};
+                todos = Object.keys(val).map(k => ({ _key: k, ...val[k] }))
+                    .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                renderTodos();
+            });
         }
 
         // ===== USER =====
@@ -504,7 +523,7 @@
             localStorage.setItem('ralphiapp_user', user);
             userSelector.classList.add('hidden');
             updateUserBadge();
-            renderAll();
+            setupFirebaseSync();
         }
 
         function updateUserBadge() {
@@ -512,10 +531,9 @@
         }
 
         // ===== INIT =====
-        loadData();
         if (currentUser) {
             userSelector.classList.add('hidden');
-            setTimeout(() => { splash.classList.add('hidden'); updateUserBadge(); renderAll(); }, 1500);
+            setTimeout(() => { splash.classList.add('hidden'); updateUserBadge(); setupFirebaseSync(); }, 1500);
         } else {
             setTimeout(() => { splash.classList.add('hidden'); }, 1500);
         }
@@ -575,10 +593,9 @@
             const text = messageInput.value.trim();
             if (!text || isSending) return;
 
-            messages.push({ sender: currentUser, text, time: getTime() });
+            // Nachricht in Firebase pushen (Kathi sieht sie sofort)
+            db.ref('messages').push({ sender: currentUser, text, time: getTime(), timestamp: Date.now() });
             messageInput.value = '';
-            renderChat();
-            saveData();
 
             isSending = true;
             sendBtn.disabled = true;
@@ -586,14 +603,16 @@
             // Typing indicator
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message other';
+            typingDiv.id = 'typingIndicator';
             typingDiv.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
             chatArea.appendChild(typingDiv);
             chatArea.scrollTop = chatArea.scrollHeight;
 
+            let reply = '';
             if (!apiKey) {
                 await new Promise(r => setTimeout(r, 700));
                 const demos = ['✅ Alles klar!', '👍 Verstanden!', '😎 Perfekt!', '🔥 Wird gemacht!', 'Jo! 👌', '💪 Läuft!'];
-                messages.push({ sender: 'RalphiApp', text: demos[Math.floor(Math.random()*demos.length)] + ' (Demo - API-Key in ⚙️ für echten Chat)', time: getTime() });
+                reply = demos[Math.floor(Math.random()*demos.length)] + ' (Demo - API-Key in ⚙️ für echten Chat)';
             } else {
                 try {
                     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -608,13 +627,13 @@
                     });
                     if (!response.ok) throw new Error('Status ' + response.status);
                     const data = await response.json();
-                    messages.push({ sender: 'RalphiApp', text: data.content[0].text, time: getTime() });
+                    reply = data.content[0].text;
                 } catch (e) {
-                    messages.push({ sender: 'RalphiApp', text: '⚠️ API-Fehler. Key ok? (Prüf ⚙️ Einstellungen). Browser blockt evtl. den direkten Zugriff.', time: getTime() });
+                    reply = '⚠️ API-Fehler. Key ok? (Prüf ⚙️ Einstellungen).';
                 }
             }
-            renderChat();
-            saveData();
+            // Antwort von RalphiApp in Firebase (sehen beide)
+            db.ref('messages').push({ sender: 'RalphiApp', text: reply, time: getTime(), timestamp: Date.now() });
             isSending = false;
             sendBtn.disabled = false;
         }
@@ -647,10 +666,10 @@
             s.innerHTML = apiKey ? '<div class="api-status connected">✅ API aktiv - Chat mit Claude läuft</div>' : '<div class="api-status disconnected">⚠️ Kein Key - Demo-Modus</div>';
         }
         function clearAllData() {
-            if (confirm('🚨 Wirklich ALLES löschen? (Chats, Standorte, Aufgaben)')) {
-                messages = []; locations = []; todos = [];
-                localStorage.removeItem('ralphiapp_data');
-                renderAll();
+            if (confirm('🚨 Wirklich ALLES löschen? (Chats, Standorte, Aufgaben - auch bei Kathi!)')) {
+                db.ref('messages').remove();
+                db.ref('locations').remove();
+                db.ref('todos').remove();
                 closeModal('settingsModal');
                 showToast('✅ Alles gelöscht!', 'success');
             }
@@ -674,7 +693,7 @@
         function renderLocations() {
             locationsList.innerHTML = '';
             if (locations.length === 0) { locationsList.innerHTML = '<div class="empty-state">📍 Noch keine Standorte</div>'; return; }
-            locations.forEach((loc, idx) => {
+            locations.forEach((loc) => {
                 const div = document.createElement('div');
                 div.className = 'location-card';
                 const userLabel = loc.user === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
@@ -689,7 +708,7 @@
                         <div class="user-info">von ${userLabel}</div>
                         <button class="maps-btn" onclick="window.open('${openUrl}','_blank')">🗺️ In Maps öffnen</button>
                     </div>
-                    <button class="location-delete" onclick="deleteLocation(${idx})">🗑️</button>
+                    <button class="location-delete" onclick="deleteLocation('${loc._key}')">🗑️</button>
                 `;
                 locationsList.appendChild(div);
             });
@@ -704,14 +723,11 @@
             let lat = null, lng = null, mapLink = '';
             const lower = input.toLowerCase();
 
-            // 1) Ist es ein Google Maps Link?
             if (lower.includes('http') && (lower.includes('goo.gl') || lower.includes('google.com/maps') || lower.includes('maps.app') || lower.includes('maps.google'))) {
                 mapLink = input;
-                // Versuche Koordinaten aus dem Link zu lesen (klappt bei langen Links mit @ oder q=)
                 const m = input.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) || input.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/) || input.match(/(-?\d+\.\d+),(-?\d+\.\d+)/);
                 if (m) { lat = parseFloat(m[1]); lng = parseFloat(m[2]); }
             }
-            // 2) Sonst: reine Koordinaten "48.2,14.3"
             else {
                 const m = input.match(/(-?\d+\.?\d*),\s*(-?\d+\.?\d*)/);
                 if (m) {
@@ -723,15 +739,14 @@
                 }
             }
 
-            locations.push({ name, lat, lng, mapLink, user: currentUser });
+            // In Firebase speichern (Kathi sieht es sofort)
+            db.ref('locations').push({ name, lat, lng, mapLink, user: currentUser, timestamp: Date.now() });
             locationInput.value = '';
             locationLinkInput.value = '';
-            renderLocations();
-            saveData();
             showToast('✅ Standort "' + name + '" gespeichert!', 'success');
         }
 
-        function deleteLocation(idx) { locations.splice(idx, 1); renderLocations(); saveData(); }
+        function deleteLocation(key) { db.ref('locations/' + key).remove(); }
         locationInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addLocation(); });
         locationLinkInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addLocation(); });
 
@@ -739,19 +754,19 @@
         function renderTodos() {
             todosList.innerHTML = '';
             if (todos.length === 0) { todosList.innerHTML = '<div class="empty-state">📋 Keine Aufgaben - alles erledigt! 🎉</div>'; return; }
-            todos.forEach((todo, idx) => {
+            todos.forEach((todo) => {
                 const div = document.createElement('div');
                 div.className = 'todo-card' + (todo.done ? ' done' : '');
                 const userLabel = todo.user === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
                 div.innerHTML = `
-                    <div style="display:flex;flex:1;" onclick="toggleTodo(${idx})">
+                    <div style="display:flex;flex:1;" onclick="toggleTodo('${todo._key}', ${!todo.done})">
                         <div class="todo-checkbox"></div>
                         <div class="todo-content">
                             <div class="todo-text">${todo.text}</div>
                             <div class="user-info">von ${userLabel}</div>
                         </div>
                     </div>
-                    <button class="todo-delete" onclick="deleteTodo(${idx})">🗑️</button>
+                    <button class="todo-delete" onclick="deleteTodo('${todo._key}')">🗑️</button>
                 `;
                 todosList.appendChild(div);
             });
@@ -760,14 +775,12 @@
         function addTodo() {
             const text = todoInput.value.trim();
             if (!text) { showToast('Bitte eine Aufgabe eingeben!', 'error'); return; }
-            todos.push({ text, done: false, user: currentUser });
+            db.ref('todos').push({ text, done: false, user: currentUser, timestamp: Date.now() });
             todoInput.value = '';
-            renderTodos();
-            saveData();
         }
 
-        function toggleTodo(idx) { todos[idx].done = !todos[idx].done; renderTodos(); saveData(); }
-        function deleteTodo(idx) { todos.splice(idx, 1); renderTodos(); saveData(); }
+        function toggleTodo(key, done) { db.ref('todos/' + key + '/done').set(done); }
+        function deleteTodo(key) { db.ref('todos/' + key).remove(); }
         todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTodo(); });
     </script>
 </body>
