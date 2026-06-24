@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#6366f1">
+    <title>RalphiApp</title>
+    <link rel="icon" type="image/png" href="ralphiapp-logo.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #6366f1;
+            --secondary: #06b6d4;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+        
+        html, body { width: 100%; height: 100%; overflow: hidden; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            height: 100%;
+            overflow: hidden;
+            color: #cbd5e1;
+        }
+        
+        .container { display: flex; height: 100dvh; min-height: 100dvh; flex-direction: column; }
+        
+        .splash {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 9999; gap: 20px;
+            opacity: 1; transition: opacity 0.5s ease-out;
+        }
+        .splash.hidden { opacity: 0; pointer-events: none; }
+        
+        .splash-logo {
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
+            animation: splash-float 2s ease-in-out infinite;
+        }
+        .splash-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 24px; }
+        @keyframes splash-float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        
+        .splash-text h1 {
+            font-size: 28px; font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .splash-text p { font-size: 14px; color: #94a3b8; }
+        
+        .main-layout { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+        
+        .sidebar {
+            width: 80px;
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex; flex-direction: column; align-items: center;
+            padding: 16px 0; gap: 12px;
+            overflow-y: auto; flex-shrink: 0;
+        }
+        
+        .logo {
+            width: 52px; height: 52px;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer; overflow: hidden; flex-shrink: 0;
+        }
+        .logo img { width: 100%; height: 100%; object-fit: contain; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        
+        .btn-sidebar {
+            width: 50px; height: 50px;
+            border: none; border-radius: 13px;
+            background: rgba(148, 163, 184, 0.1);
+            color: #cbd5e1; font-size: 22px;
+            cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .btn-sidebar:hover { background: rgba(99, 102, 241, 0.2); color: #fff; }
+        .btn-sidebar.active {
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            color: white; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-whatsapp { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; }
+        .btn-whatsapp:hover { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; }
+        
+        .btn-emergency {
+            background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+            color: white;
+            animation: pulse-emergency 2s infinite;
+        }
+        .btn-emergency:hover { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: white; }
+        @keyframes pulse-emergency {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+        
+        .sidebar-spacer { margin-top: auto; }
+        
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+        
+        .header {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 18px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 {
+            font-size: 22px; font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .user-badge {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            color: #818cf8; padding: 6px 12px;
+            border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+        .btn-settings {
+            width: 40px; height: 40px; border: none;
+            background: rgba(148, 163, 184, 0.1); border-radius: 10px;
+            color: #cbd5e1; font-size: 18px; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-settings:hover { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        
+        .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+        .tab-content { display: none; flex: 1; overflow: hidden; min-height: 0; }
+        .tab-content.active { display: flex; flex-direction: column; min-height: 0; }
+        
+        .chat-area {
+            flex: 1; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; gap: 16px;
+        }
+        .message { display: flex; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message.own { justify-content: flex-end; }
+        .message-bubble {
+            max-width: 75%; padding: 12px 16px; border-radius: 18px;
+            line-height: 1.4; word-wrap: break-word;
+        }
+        .message.own .message-bubble { background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%); color: white; }
+        .message.other .message-bubble { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+        .message-sender { font-size: 11px; opacity: 0.7; margin-bottom: 3px; font-weight: 600; }
+        .message-time { font-size: 11px; margin-top: 4px; opacity: 0.7; }
+        
+        .typing-indicator { display: flex; gap: 4px; padding: 14px 18px; background: rgba(148, 163, 184, 0.15); border-radius: 18px; width: fit-content; }
+        .typing-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; animation: typing 1.4s infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%, 60%, 100% { opacity: 0.5; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-8px); } }
+        
+        .chat-input {
+            display: flex; gap: 12px; padding: 16px;
+            background: rgba(99, 102, 241, 0.05);
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        .chat-input input {
+            flex: 1; background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px; padding: 12px 16px;
+            color: #cbd5e1; font-size: 14px; outline: none;
+        }
+        .chat-input input:focus { background: rgba(148, 163, 184, 0.15); border-color: rgba(99, 102, 241, 0.5); }
+        .chat-input button {
+            width: 44px; height: 44px; border: none;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            border-radius: 10px; color: white; cursor: pointer; font-size: 18px;
+            transition: all 0.3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .chat-input button:hover:not(:disabled) { transform: scale(1.05); }
+        .chat-input button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .locations-container, .todos-container { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        .locations-input, .todos-input {
+            padding: 16px; background: rgba(99, 102, 241, 0.05);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .locations-input input, .todos-input input {
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 10px; padding: 12px 16px;
+            color: #cbd5e1; font-size: 14px; outline: none;
+        }
+        .locations-input input:focus, .todos-input input:focus { background: rgba(148, 163, 184, 0.15); border-color: rgba(99, 102, 241, 0.5); }
+        
+        .locations-btn, .todos-btn, .gps-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            border: none; border-radius: 10px; color: white;
+            padding: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s;
+        }
+        .gps-btn { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); }
+        .locations-btn:hover, .todos-btn:hover, .gps-btn:hover { transform: translateY(-2px); }
+        
+        .locations-list, .todos-list { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .location-card, .todo-card {
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 14px; padding: 16px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            animation: slideIn 0.3s ease-out;
+        }
+        .todo-card { cursor: pointer; transition: all 0.3s; }
+        .todo-card:hover { background: rgba(148, 163, 184, 0.15); }
+        .todo-card.done { opacity: 0.6; }
+        .todo-card.done .todo-text { text-decoration: line-through; color: #64748b; }
+        
+        .todo-checkbox {
+            width: 24px; height: 24px; border-radius: 6px;
+            background: rgba(99, 102, 241, 0.2); border: 2px solid rgba(99, 102, 241, 0.5);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            margin-right: 12px; transition: all 0.3s; flex-shrink: 0;
+        }
+        .todo-card.done .todo-checkbox { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); border-color: #10b981; }
+        .todo-checkbox::after { content: '✓'; color: white; font-size: 14px; font-weight: bold; opacity: 0; }
+        .todo-card.done .todo-checkbox::after { opacity: 1; }
+        
+        .todo-content, .location-info { flex: 1; }
+        .todo-text, .location-name { color: #cbd5e1; font-weight: 600; }
+        .location-coords { font-size: 12px; color: #64748b; margin-top: 8px; font-family: monospace; }
+        .user-info { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+        
+        .location-delete, .todo-delete {
+            background: rgba(239, 68, 68, 0.2); border: none; color: #ef4444;
+            width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+            font-size: 16px; transition: all 0.3s; flex-shrink: 0;
+        }
+        .location-delete:hover, .todo-delete:hover { background: rgba(239, 68, 68, 0.3); }
+        
+        .maps-btn {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            border: none; color: white; padding: 8px 14px; border-radius: 8px;
+            font-size: 12px; cursor: pointer; transition: all 0.3s; display: inline-block; margin-top: 8px;
+        }
+        .maps-btn:hover { transform: translateY(-1px); }
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; }
+        
+        /* USER SELECTOR */
+        .user-selector {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.97);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9998; flex-direction: column; gap: 30px;
+        }
+        .user-selector.hidden { display: none; }
+        .user-selector h2 {
+            font-size: 26px;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .user-buttons { display: flex; gap: 20px; flex-direction: column; }
+        .user-btn {
+            padding: 16px 40px; border: none; border-radius: 12px;
+            font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s; min-width: 220px;
+        }
+        .user-btn.raphy { background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%); color: white; }
+        .user-btn.kathi { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); color: white; }
+        .user-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4); }
+        
+        /* MODALS */
+        .modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.92);
+            display: none; align-items: center; justify-content: center;
+            z-index: 3000; padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px; padding: 30px; max-width: 420px; width: 100%;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-content h2 {
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .modal-content.emergency h2 { background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .settings-label { font-size: 12px; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: block; }
+        .modal-content input {
+            width: 100%; background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 10px;
+            padding: 12px; color: #cbd5e1; margin-bottom: 12px; outline: none;
+        }
+        .modal-content input:focus { border-color: rgba(99, 102, 241, 0.5); }
+        .api-status { padding: 12px; border-radius: 8px; font-size: 12px; margin-bottom: 16px; text-align: center; }
+        .api-status.connected { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .api-status.disconnected { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        
+        .phone-number {
+            font-size: 28px; font-weight: bold; color: #cbd5e1; font-family: monospace;
+            margin: 24px 0; padding: 20px; background: rgba(239, 68, 68, 0.1);
+            border-radius: 12px; text-align: center;
+        }
+        .modal-buttons { display: flex; gap: 12px; margin-top: 20px; flex-direction: column; }
+        .btn-primary, .btn-secondary, .btn-call {
+            padding: 13px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 15px;
+        }
+        .btn-primary { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; }
+        .btn-call { background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); color: white; }
+        .btn-secondary { background: rgba(148, 163, 184, 0.1); color: #cbd5e1; }
+        .btn-primary:hover, .btn-call:hover { transform: translateY(-2px); }
+        .btn-secondary:hover { background: rgba(148, 163, 184, 0.2); }
+        .api-help { color: #64748b; font-size: 12px; margin-top: 6px; display: block; }
+        
+        /* TOAST */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #cbd5e1; padding: 14px 24px; border-radius: 12px;
+            font-size: 14px; font-weight: 600; z-index: 5000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); opacity: 0;
+            transition: all 0.3s ease-out; max-width: 90%; text-align: center;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { border-color: rgba(16, 185, 129, 0.5); }
+        .toast.error { border-color: rgba(239, 68, 68, 0.5); }
+        
+        .phone-link {
+            display: block; text-decoration: none;
+            background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+            color: white; padding: 16px; border-radius: 10px;
+            font-weight: 700; font-size: 17px; text-align: center; transition: all 0.3s;
+        }
+        .phone-link:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="splash" id="splash">
+        <div class="splash-logo">
+            <img src="ralphiapp-logo.png" alt="Logo" onerror="this.style.display='none'">
+        </div>
+        <div class="splash-text">
+            <h1>RalphiApp</h1>
+            <p>Dein digitaler Helfer</p>
+        </div>
+    </div>
+
+    <div class="user-selector" id="userSelector">
+        <h2>👋 Wer bist du?</h2>
+        <div class="user-buttons">
+            <button class="user-btn raphy" onclick="selectUser('raphy')">🔥 Raphy</button>
+            <button class="user-btn kathi" onclick="selectUser('kathi')">💜 Kathi</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-layout">
+            <div class="sidebar">
+                <div class="logo" onclick="window.location.reload()">
+                    <img src="ralphiapp-logo.png" alt="Logo" onerror="this.parentElement.innerHTML='R'">
+                </div>
+                <button class="btn-sidebar active" data-tab="chat" title="Chat">💬</button>
+                <button class="btn-sidebar" data-tab="locations" title="Standorte">📍</button>
+                <button class="btn-sidebar" data-tab="todos" title="Aufgaben">📋</button>
+                <button class="btn-sidebar btn-whatsapp" onclick="openWhatsApp()" title="WhatsApp">💚</button>
+                <button class="btn-sidebar btn-emergency sidebar-spacer" onclick="showPhoneDialog()" title="Notruf">🚨</button>
+            </div>
+
+            <div class="main">
+                <div class="header">
+                    <h1 id="headerTitle">💬 Chat</h1>
+                    <div class="header-right">
+                        <div class="user-badge" id="userBadge">👤 Raphy</div>
+                        <button class="btn-settings" onclick="openSettings()">⚙️</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div id="chat-tab" class="tab-content active">
+                        <div class="chat-area" id="chatArea"></div>
+                        <div class="chat-input">
+                            <input type="text" id="messageInput" placeholder="Schreib mir..." autocomplete="off">
+                            <button id="sendBtn">➤</button>
+                        </div>
+                    </div>
+
+                    <div id="locations-tab" class="tab-content">
+                        <div class="locations-container">
+                            <div class="locations-input">
+                                <input type="text" id="locationInput" placeholder="Titel (z.B. Taxi, Auto)">
+                                <button class="gps-btn" onclick="getGpsLocation()">📍 Mein aktueller Standort</button>
+                                <input type="text" id="locationLinkInput" placeholder="Koordinaten (48.2,14.3) oder Maps-Link">
+                                <button class="locations-btn" onclick="addLocation()">💾 Speichern</button>
+                            </div>
+                            <div class="locations-list" id="locationsList"></div>
+                        </div>
+                    </div>
+
+                    <div id="todos-tab" class="tab-content">
+                        <div class="todos-container">
+                            <div class="todos-input">
+                                <input type="text" id="todoInput" placeholder="Neue Aufgabe...">
+                                <button class="todos-btn" onclick="addTodo()">➕ Hinzufügen</button>
+                            </div>
+                            <div class="todos-list" id="todosList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- PHONE MODAL -->
+    <div class="modal" id="phoneModal">
+        <div class="modal-content emergency">
+            <h2>📞 Notruf</h2>
+            <p style="color:#94a3b8;">Tipp die Nummer zum Anrufen:</p>
+            <a class="phone-link" href="tel:+436502546801">📞 +43 650 25468 01</a>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="copyPhoneNumber()">📋 Nummer kopieren</button>
+                <button class="btn-secondary" onclick="closeModal('phoneModal')">✕ Schließen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <h2>⚙️ Einstellungen</h2>
+            <label class="settings-label">Claude API Key (für Chat mit Claude)</label>
+            <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+            <span class="api-help">🔐 Hol dir einen Key: console.anthropic.com/keys</span>
+            <div id="apiStatus" style="margin-top:16px;"></div>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="saveSettings()">✓ Speichern</button>
+                <button class="btn-secondary" onclick="clearAllData()" style="background:rgba(245,158,11,0.2);color:#f59e0b;">🗑️ Alle Daten löschen</button>
+                <button class="btn-secondary" onclick="closeModal('settingsModal')">✕ Schließen</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== STATE =====
+        let currentUser = localStorage.getItem('ralphiapp_user') || null;
+        let apiKey = localStorage.getItem('ralphiapp_api_key') || '';
+        let messages = [];
+        let locations = [];
+        let todos = [];
+        let isSending = false;
+
+        // ===== DOM =====
+        const splash = document.getElementById('splash');
+        const userSelector = document.getElementById('userSelector');
+        const userBadge = document.getElementById('userBadge');
+        const headerTitle = document.getElementById('headerTitle');
+        const chatArea = document.getElementById('chatArea');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const locationInput = document.getElementById('locationInput');
+        const locationLinkInput = document.getElementById('locationLinkInput');
+        const locationsList = document.getElementById('locationsList');
+        const todoInput = document.getElementById('todoInput');
+        const todosList = document.getElementById('todosList');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const tabButtons = document.querySelectorAll('[data-tab]');
+        const tabs = document.querySelectorAll('.tab-content');
+
+        // ===== STORAGE =====
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('ralphiapp_data');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    messages = data.messages || [];
+                    locations = data.locations || [];
+                    todos = data.todos || [];
+                }
+            } catch (e) { console.error('Load error:', e); }
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('ralphiapp_data', JSON.stringify({ messages, locations, todos }));
+            } catch (e) { console.error('Save error:', e); alert('⚠️ Speicher-Fehler'); }
+        }
+
+        // ===== USER =====
+        function selectUser(user) {
+            currentUser = user;
+            localStorage.setItem('ralphiapp_user', user);
+            userSelector.classList.add('hidden');
+            updateUserBadge();
+            renderAll();
+        }
+
+        function updateUserBadge() {
+            userBadge.textContent = currentUser === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+        }
+
+        // ===== INIT =====
+        loadData();
+        if (currentUser) {
+            userSelector.classList.add('hidden');
+            setTimeout(() => { splash.classList.add('hidden'); updateUserBadge(); renderAll(); }, 1500);
+        } else {
+            setTimeout(() => { splash.classList.add('hidden'); }, 1500);
+        }
+
+        function renderAll() { renderChat(); renderLocations(); renderTodos(); }
+
+        // ===== TABS =====
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                tabButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                tabs.forEach(tab => tab.classList.remove('active'));
+                document.getElementById(tabName + '-tab').classList.add('active');
+                if (tabName === 'chat') { headerTitle.textContent = '💬 Chat'; setTimeout(() => chatArea.scrollTop = chatArea.scrollHeight, 0); }
+                else if (tabName === 'locations') headerTitle.textContent = '📍 Standorte';
+                else if (tabName === 'todos') headerTitle.textContent = '📋 Aufgaben';
+            });
+        });
+
+        function getTime() { return new Date().toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' }); }
+
+        // ===== TOAST (sichtbare Meldung statt alert) =====
+        let toastTimer;
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast show' + (type ? ' ' + type : '');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { t.className = 'toast'; }, 2800);
+        }
+
+        // ===== CHAT =====
+        function renderChat() {
+            chatArea.innerHTML = '';
+            messages.forEach(msg => {
+                const isOwn = msg.sender === currentUser;
+                const div = document.createElement('div');
+                div.className = 'message ' + (isOwn ? 'own' : 'other');
+                let senderLabel = '';
+                if (!isOwn) {
+                    senderLabel = msg.sender === 'RalphiApp' ? '🤖 RalphiApp' : (msg.sender === 'raphy' ? '🔥 Raphy' : '💜 Kathi');
+                }
+                div.innerHTML = `
+                    <div class="message-bubble">
+                        ${senderLabel ? `<div class="message-sender">${senderLabel}</div>` : ''}
+                        <div>${msg.text}</div>
+                        <div class="message-time">${msg.time}</div>
+                    </div>
+                `;
+                chatArea.appendChild(div);
+            });
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || isSending) return;
+
+            messages.push({ sender: currentUser, text, time: getTime() });
+            messageInput.value = '';
+            renderChat();
+            saveData();
+
+            isSending = true;
+            sendBtn.disabled = true;
+
+            // Typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message other';
+            typingDiv.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+            chatArea.appendChild(typingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            if (!apiKey) {
+                await new Promise(r => setTimeout(r, 700));
+                const demos = ['✅ Alles klar!', '👍 Verstanden!', '😎 Perfekt!', '🔥 Wird gemacht!', 'Jo! 👌', '💪 Läuft!'];
+                messages.push({ sender: 'RalphiApp', text: demos[Math.floor(Math.random()*demos.length)] + ' (Demo - API-Key in ⚙️ für echten Chat)', time: getTime() });
+            } else {
+                try {
+                    const response = await fetch('https://api.anthropic.com/v1/messages', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+                        body: JSON.stringify({
+                            model: 'claude-opus-4-6',
+                            max_tokens: 400,
+                            system: 'Du bist RalphiApp, die persönliche Helfer-App von Raphy für ihn und seine Freundin Kathi. Antworte kurz, herzlich und im lockeren oberösterreichischen Dialekt. Max 2-3 Sätze, gelegentlich Emojis.',
+                            messages: [{ role: 'user', content: text }]
+                        })
+                    });
+                    if (!response.ok) throw new Error('Status ' + response.status);
+                    const data = await response.json();
+                    messages.push({ sender: 'RalphiApp', text: data.content[0].text, time: getTime() });
+                } catch (e) {
+                    messages.push({ sender: 'RalphiApp', text: '⚠️ API-Fehler. Key ok? (Prüf ⚙️ Einstellungen). Browser blockt evtl. den direkten Zugriff.', time: getTime() });
+                }
+            }
+            renderChat();
+            saveData();
+            isSending = false;
+            sendBtn.disabled = false;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !isSending) sendMessage(); });
+
+        // ===== WHATSAPP & PHONE =====
+        function openWhatsApp() {
+            window.open('https://wa.me/436502546801?text=Hallo%20-%20i%20brauch%20deine%20Hilfe!', '_blank');
+        }
+        function showPhoneDialog() { document.getElementById('phoneModal').classList.add('active'); }
+        function copyPhoneNumber() {
+            navigator.clipboard.writeText('+436502546801').then(() => showToast('✅ Kopiert: +43 650 25468 01', 'success')).catch(() => showToast('+43 650 25468 01', ''));
+        }
+
+        // ===== SETTINGS =====
+        function openSettings() { apiKeyInput.value = apiKey; updateApiStatus(); document.getElementById('settingsModal').classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function saveSettings() {
+            apiKey = apiKeyInput.value.trim();
+            if (apiKey) localStorage.setItem('ralphiapp_api_key', apiKey);
+            else localStorage.removeItem('ralphiapp_api_key');
+            updateApiStatus();
+            closeModal('settingsModal');
+            showToast('✅ Einstellungen gespeichert!', 'success');
+        }
+        function updateApiStatus() {
+            const s = document.getElementById('apiStatus');
+            s.innerHTML = apiKey ? '<div class="api-status connected">✅ API aktiv - Chat mit Claude läuft</div>' : '<div class="api-status disconnected">⚠️ Kein Key - Demo-Modus</div>';
+        }
+        function clearAllData() {
+            if (confirm('🚨 Wirklich ALLES löschen? (Chats, Standorte, Aufgaben)')) {
+                messages = []; locations = []; todos = [];
+                localStorage.removeItem('ralphiapp_data');
+                renderAll();
+                closeModal('settingsModal');
+                showToast('✅ Alles gelöscht!', 'success');
+            }
+        }
+
+        // ===== GPS =====
+        function getGpsLocation() {
+            if (!navigator.geolocation) { showToast('⚠️ GPS nicht verfügbar', 'error'); return; }
+            showToast('📡 Suche GPS...', '');
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude, lng = pos.coords.longitude;
+                    locationLinkInput.value = lat.toFixed(5) + ',' + lng.toFixed(5);
+                    showToast('✅ GPS gefunden! Jetzt Titel + Speichern', 'success');
+                },
+                (err) => showToast('⚠️ GPS Fehler - erlaube GPS im Browser!', 'error')
+            );
+        }
+
+        // ===== LOCATIONS =====
+        function renderLocations() {
+            locationsList.innerHTML = '';
+            if (locations.length === 0) { locationsList.innerHTML = '<div class="empty-state">📍 Noch keine Standorte</div>'; return; }
+            locations.forEach((loc, idx) => {
+                const div = document.createElement('div');
+                div.className = 'location-card';
+                const userLabel = loc.user === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+                const coordText = (loc.lat != null && loc.lng != null)
+                    ? `${loc.lat.toFixed(4)}° N, ${loc.lng.toFixed(4)}° E`
+                    : '🔗 Google Maps Link';
+                const openUrl = loc.mapLink || `https://maps.google.com/?q=${loc.lat},${loc.lng}`;
+                div.innerHTML = `
+                    <div class="location-info">
+                        <div class="location-name">📍 ${loc.name}</div>
+                        <div class="location-coords">${coordText}</div>
+                        <div class="user-info">von ${userLabel}</div>
+                        <button class="maps-btn" onclick="window.open('${openUrl}','_blank')">🗺️ In Maps öffnen</button>
+                    </div>
+                    <button class="location-delete" onclick="deleteLocation(${idx})">🗑️</button>
+                `;
+                locationsList.appendChild(div);
+            });
+        }
+
+        function addLocation() {
+            const name = locationInput.value.trim();
+            const input = locationLinkInput.value.trim();
+            if (!name) { showToast('Bitte Titel eingeben! (z.B. "Taxi")', 'error'); return; }
+            if (!input) { showToast('Bitte Standort eingeben (oder 📍 Button)', 'error'); return; }
+
+            let lat = null, lng = null, mapLink = '';
+            const lower = input.toLowerCase();
+
+            // 1) Ist es ein Google Maps Link?
+            if (lower.includes('http') && (lower.includes('goo.gl') || lower.includes('google.com/maps') || lower.includes('maps.app') || lower.includes('maps.google'))) {
+                mapLink = input;
+                // Versuche Koordinaten aus dem Link zu lesen (klappt bei langen Links mit @ oder q=)
+                const m = input.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) || input.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/) || input.match(/(-?\d+\.\d+),(-?\d+\.\d+)/);
+                if (m) { lat = parseFloat(m[1]); lng = parseFloat(m[2]); }
+            }
+            // 2) Sonst: reine Koordinaten "48.2,14.3"
+            else {
+                const m = input.match(/(-?\d+\.?\d*),\s*(-?\d+\.?\d*)/);
+                if (m) {
+                    lat = parseFloat(m[1]); lng = parseFloat(m[2]);
+                    mapLink = `https://maps.google.com/?q=${lat},${lng}`;
+                } else {
+                    showToast('❌ Koordinaten "48.2,14.3" oder Maps-Link', 'error');
+                    return;
+                }
+            }
+
+            locations.push({ name, lat, lng, mapLink, user: currentUser });
+            locationInput.value = '';
+            locationLinkInput.value = '';
+            renderLocations();
+            saveData();
+            showToast('✅ Standort "' + name + '" gespeichert!', 'success');
+        }
+
+        function deleteLocation(idx) { locations.splice(idx, 1); renderLocations(); saveData(); }
+        locationInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addLocation(); });
+        locationLinkInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addLocation(); });
+
+        // ===== TODOS =====
+        function renderTodos() {
+            todosList.innerHTML = '';
+            if (todos.length === 0) { todosList.innerHTML = '<div class="empty-state">📋 Keine Aufgaben - alles erledigt! 🎉</div>'; return; }
+            todos.forEach((todo, idx) => {
+                const div = document.createElement('div');
+                div.className = 'todo-card' + (todo.done ? ' done' : '');
+                const userLabel = todo.user === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+                div.innerHTML = `
+                    <div style="display:flex;flex:1;" onclick="toggleTodo(${idx})">
+                        <div class="todo-checkbox"></div>
+                        <div class="todo-content">
+                            <div class="todo-text">${todo.text}</div>
+                            <div class="user-info">von ${userLabel}</div>
+                        </div>
+                    </div>
+                    <button class="todo-delete" onclick="deleteTodo(${idx})">🗑️</button>
+                `;
+                todosList.appendChild(div);
+            });
+        }
+
+        function addTodo() {
+            const text = todoInput.value.trim();
+            if (!text) { showToast('Bitte eine Aufgabe eingeben!', 'error'); return; }
+            todos.push({ text, done: false, user: currentUser });
+            todoInput.value = '';
+            renderTodos();
+            saveData();
+        }
+
+        function toggleTodo(idx) { todos[idx].done = !todos[idx].done; renderTodos(); saveData(); }
+        function deleteTodo(idx) { todos.splice(idx, 1); renderTodos(); saveData(); }
+        todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTodo(); });
+    </script>
+</body>
+</html>
