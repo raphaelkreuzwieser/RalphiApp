@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#e07a47">
     <title>RalphiApp</title>
     <link rel="icon" type="image/svg+xml" href="ralphiapp-logo.svg">
     <link rel="apple-touch-icon" href="ralphiapp-logo.png">
@@ -13,8 +13,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --primary: #6366f1;
-            --secondary: #06b6d4;
+            --primary: #e07a47;
+            --secondary: #eaa94e;
             --danger: #ef4444;
             --success: #10b981;
         }
@@ -23,10 +23,13 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background:
+                radial-gradient(circle at 15% 0%, rgba(224, 122, 71, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 90% 100%, rgba(234, 169, 78, 0.10) 0%, transparent 45%),
+                linear-gradient(135deg, #1a1310 0%, #261a13 50%, #2b201a 100%);
             height: 100%;
             overflow: hidden;
-            color: #cbd5e1;
+            color: #efe3d6;
         }
         
         .container { display: flex; height: 100dvh; min-height: 100dvh; flex-direction: column; }
@@ -34,7 +37,7 @@
         .splash {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 40%, #1e293b 0%, #0f172a 70%);
+            background: radial-gradient(circle at 50% 40%, #2b201a 0%, #1a1310 70%);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             z-index: 9999; gap: 28px;
@@ -51,7 +54,7 @@
         }
         .splash-rings span {
             position: absolute; border-radius: 50%;
-            border: 2px solid rgba(99, 102, 241, 0.4);
+            border: 2px solid rgba(224, 122, 71, 0.4);
             animation: ring-pulse 2.5s ease-out infinite;
         }
         .splash-rings span:nth-child(1) { width: 120px; height: 120px; animation-delay: 0s; }
@@ -66,7 +69,7 @@
             width: 120px; height: 120px;
             border-radius: 30px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 20px 60px rgba(224, 122, 71, 0.5);
             animation: logo-entrance 1s cubic-bezier(0.34, 1.56, 0.64, 1) both, splash-float 3s ease-in-out 1s infinite;
             position: relative; z-index: 2;
             overflow: hidden;
@@ -81,7 +84,7 @@
         .splash-text { text-align: center; animation: text-fade-up 0.8s ease-out 0.6s both; }
         .splash-text h1 {
             font-size: 34px; font-weight: 800; letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #818cf8 0%, #06b6d4 50%, #fbbf24 100%);
+            background: linear-gradient(135deg, #f0a866 0%, #eaa94e 50%, #fbbf24 100%);
             background-size: 200% auto;
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
             animation: shine 3s linear infinite;
@@ -91,19 +94,19 @@
             0% { transform: translateY(20px); opacity: 0; }
             100% { transform: translateY(0); opacity: 1; }
         }
-        .splash-text p { font-size: 14px; color: #94a3b8; margin-top: 4px; letter-spacing: 2px; text-transform: uppercase; }
+        .splash-text p { font-size: 14px; color: #b5a18d; margin-top: 4px; letter-spacing: 2px; text-transform: uppercase; }
 
         /* Ladebalken unten */
         .splash-loader {
             position: absolute; bottom: 60px;
             width: 140px; height: 4px;
-            background: rgba(148, 163, 184, 0.15);
+            background: rgba(196, 170, 140, 0.15);
             border-radius: 4px; overflow: hidden;
             animation: text-fade-up 0.8s ease-out 0.9s both;
         }
         .splash-loader::after {
             content: ''; display: block; height: 100%; width: 40%;
-            background: linear-gradient(90deg, #6366f1, #06b6d4);
+            background: linear-gradient(90deg, #e07a47, #eaa94e);
             border-radius: 4px;
             animation: loader-slide 1.5s ease-in-out infinite;
         }
@@ -116,9 +119,9 @@
         
         .sidebar {
             width: 80px;
-            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+            background: linear-gradient(180deg, rgba(224, 122, 71, 0.1) 0%, rgba(234, 169, 78, 0.05) 100%);
             backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(148, 163, 184, 0.1);
+            border-right: 1px solid rgba(196, 170, 140, 0.1);
             display: flex; flex-direction: column; align-items: center;
             padding: 16px 0; gap: 12px;
             overflow-y: auto; flex-shrink: 0;
@@ -126,10 +129,10 @@
         
         .logo {
             width: 52px; height: 52px;
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
             border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 24px rgba(224, 122, 71, 0.3);
             animation: float 3s ease-in-out infinite;
             cursor: pointer; overflow: hidden; flex-shrink: 0;
         }
@@ -139,22 +142,28 @@
         .btn-sidebar {
             width: 50px; height: 50px;
             border: none; border-radius: 13px;
-            background: rgba(148, 163, 184, 0.1);
-            color: #cbd5e1; font-size: 22px;
+            background: rgba(196, 170, 140, 0.1);
+            color: #efe3d6; font-size: 22px;
             cursor: pointer; transition: all 0.3s;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
-        .btn-sidebar:hover { background: rgba(99, 102, 241, 0.2); color: #fff; }
+        .btn-sidebar:hover { background: rgba(224, 122, 71, 0.2); color: #fff; }
         .btn-sidebar.active {
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
-            color: white; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
+            color: white; box-shadow: 0 8px 24px rgba(224, 122, 71, 0.4);
         }
         
         .btn-whatsapp { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; }
         .btn-whatsapp:hover { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; }
         .btn-denkandich { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); color: white; }
         .btn-denkandich:hover { background: linear-gradient(135deg, #db2777 0%, #ec4899 100%); color: white; transform: scale(1.08); }
+        .btn-brauchdi { background: linear-gradient(135deg, #dc2626 0%, #f87171 100%); color: white; }
+        .btn-brauchdi:hover { background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%); color: white; transform: scale(1.08); }
+        .btn-aufans { background: linear-gradient(135deg, #d97706 0%, #f0b35e 100%); color: white; }
+        .btn-aufans:hover { background: linear-gradient(135deg, #b45309 0%, #d97706 100%); color: white; transform: scale(1.08); }
+        .btn-gschichtl { background: linear-gradient(135deg, #dc2626 0%, #facc15 100%); color: #fff; }
+        .btn-gschichtl:hover { background: linear-gradient(135deg, #b91c1c 0%, #eab308 100%); color: #fff; transform: scale(1.08); }
         
         .btn-emergency {
             background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
@@ -168,34 +177,39 @@
         }
         
         .sidebar-spacer { margin-top: auto; }
+        .sidebar-divider {
+            width: 36px; height: 1px; flex-shrink: 0;
+            background: rgba(196, 170, 140, 0.25);
+            margin: 4px 0;
+        }
         
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
         
         .header {
-            background: linear-gradient(90deg, rgba(99, 102, 241, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
+            background: linear-gradient(90deg, rgba(224, 122, 71, 0.05) 0%, rgba(234, 169, 78, 0.05) 100%);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            border-bottom: 1px solid rgba(196, 170, 140, 0.1);
             padding: 18px 20px;
             display: flex; justify-content: space-between; align-items: center;
         }
         .header h1 {
             font-size: 22px; font-weight: 800;
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
         .header-right { display: flex; align-items: center; gap: 10px; }
         .user-badge {
-            background: rgba(99, 102, 241, 0.2);
-            border: 1px solid rgba(99, 102, 241, 0.5);
-            color: #818cf8; padding: 6px 12px;
+            background: rgba(224, 122, 71, 0.2);
+            border: 1px solid rgba(224, 122, 71, 0.5);
+            color: #f0a866; padding: 6px 12px;
             border-radius: 20px; font-size: 12px; font-weight: 600;
         }
         .btn-settings {
             width: 40px; height: 40px; border: none;
-            background: rgba(148, 163, 184, 0.1); border-radius: 10px;
-            color: #cbd5e1; font-size: 18px; cursor: pointer; transition: all 0.3s;
+            background: rgba(196, 170, 140, 0.1); border-radius: 10px;
+            color: #efe3d6; font-size: 18px; cursor: pointer; transition: all 0.3s;
         }
-        .btn-settings:hover { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .btn-settings:hover { background: rgba(224, 122, 71, 0.2); color: #f0a866; }
         .gedanke-banner {
             background: linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(244, 114, 182, 0.15) 100%);
             border-bottom: 1px solid rgba(236, 72, 153, 0.3);
@@ -204,6 +218,14 @@
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .gedanke-banner:hover { background: linear-gradient(135deg, rgba(236, 72, 153, 0.35) 0%, rgba(244, 114, 182, 0.2) 100%); }
+        .gedanke-banner.banner-brauchdi {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.30) 0%, rgba(248, 113, 113, 0.18) 100%);
+            border-bottom: 1px solid rgba(220, 38, 38, 0.4); color: #fca5a5;
+        }
+        .gedanke-banner.banner-aufans {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.30) 0%, rgba(240, 179, 94, 0.18) 100%);
+            border-bottom: 1px solid rgba(217, 119, 6, 0.4); color: #fcd9a5; flex-wrap: wrap;
+        }
         
         .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
         .tab-content { display: none; flex: 1; overflow: hidden; min-height: 0; }
@@ -220,32 +242,32 @@
             max-width: 75%; padding: 12px 16px; border-radius: 18px;
             line-height: 1.4; word-wrap: break-word;
         }
-        .message.own .message-bubble { background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%); color: white; }
-        .message.other .message-bubble { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+        .message.own .message-bubble { background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%); color: white; }
+        .message.other .message-bubble { background: rgba(196, 170, 140, 0.15); color: #efe3d6; }
         .message-sender { font-size: 11px; opacity: 0.7; margin-bottom: 3px; font-weight: 600; }
         .message-time { font-size: 11px; margin-top: 4px; opacity: 0.7; }
         
-        .typing-indicator { display: flex; gap: 4px; padding: 14px 18px; background: rgba(148, 163, 184, 0.15); border-radius: 18px; width: fit-content; }
-        .typing-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; animation: typing 1.4s infinite; }
+        .typing-indicator { display: flex; gap: 4px; padding: 14px 18px; background: rgba(196, 170, 140, 0.15); border-radius: 18px; width: fit-content; }
+        .typing-dot { width: 8px; height: 8px; border-radius: 50%; background: #b5a18d; animation: typing 1.4s infinite; }
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typing { 0%, 60%, 100% { opacity: 0.5; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-8px); } }
         
         .chat-input {
             display: flex; gap: 12px; padding: 16px;
-            background: rgba(99, 102, 241, 0.05);
-            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            background: rgba(224, 122, 71, 0.05);
+            border-top: 1px solid rgba(196, 170, 140, 0.1);
         }
         .chat-input input {
-            flex: 1; background: rgba(148, 163, 184, 0.1);
-            border: 1px solid rgba(148, 163, 184, 0.2);
+            flex: 1; background: rgba(196, 170, 140, 0.1);
+            border: 1px solid rgba(196, 170, 140, 0.2);
             border-radius: 12px; padding: 12px 16px;
-            color: #cbd5e1; font-size: 14px; outline: none;
+            color: #efe3d6; font-size: 14px; outline: none;
         }
-        .chat-input input:focus { background: rgba(148, 163, 184, 0.15); border-color: rgba(99, 102, 241, 0.5); }
+        .chat-input input:focus { background: rgba(196, 170, 140, 0.15); border-color: rgba(224, 122, 71, 0.5); }
         .chat-input button {
             width: 44px; height: 44px; border: none;
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
             border-radius: 10px; color: white; cursor: pointer; font-size: 18px;
             transition: all 0.3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
@@ -254,20 +276,20 @@
         
         .locations-container, .todos-container { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
         .locations-input, .todos-input {
-            padding: 16px; background: rgba(99, 102, 241, 0.05);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 16px; background: rgba(224, 122, 71, 0.05);
+            border-bottom: 1px solid rgba(196, 170, 140, 0.1);
             display: flex; flex-direction: column; gap: 10px;
         }
         .locations-input input, .todos-input input {
-            background: rgba(148, 163, 184, 0.1);
-            border: 1px solid rgba(148, 163, 184, 0.2);
+            background: rgba(196, 170, 140, 0.1);
+            border: 1px solid rgba(196, 170, 140, 0.2);
             border-radius: 10px; padding: 12px 16px;
-            color: #cbd5e1; font-size: 14px; outline: none;
+            color: #efe3d6; font-size: 14px; outline: none;
         }
-        .locations-input input:focus, .todos-input input:focus { background: rgba(148, 163, 184, 0.15); border-color: rgba(99, 102, 241, 0.5); }
+        .locations-input input:focus, .todos-input input:focus { background: rgba(196, 170, 140, 0.15); border-color: rgba(224, 122, 71, 0.5); }
         
         .locations-btn, .todos-btn, .gps-btn {
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
             border: none; border-radius: 10px; color: white;
             padding: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s;
         }
@@ -276,20 +298,20 @@
         
         .locations-list, .todos-list { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
         .location-card, .todo-card {
-            background: rgba(148, 163, 184, 0.1);
-            border: 1px solid rgba(148, 163, 184, 0.2);
+            background: rgba(196, 170, 140, 0.1);
+            border: 1px solid rgba(196, 170, 140, 0.2);
             border-radius: 14px; padding: 16px;
             display: flex; justify-content: space-between; align-items: flex-start;
             animation: slideIn 0.3s ease-out;
         }
         .todo-card { cursor: pointer; transition: all 0.3s; }
-        .todo-card:hover { background: rgba(148, 163, 184, 0.15); }
+        .todo-card:hover { background: rgba(196, 170, 140, 0.15); }
         .todo-card.done { opacity: 0.6; }
-        .todo-card.done .todo-text { text-decoration: line-through; color: #64748b; }
+        .todo-card.done .todo-text { text-decoration: line-through; color: #9c8a76; }
         
         .todo-checkbox {
             width: 24px; height: 24px; border-radius: 6px;
-            background: rgba(99, 102, 241, 0.2); border: 2px solid rgba(99, 102, 241, 0.5);
+            background: rgba(224, 122, 71, 0.2); border: 2px solid rgba(224, 122, 71, 0.5);
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             margin-right: 12px; transition: all 0.3s; flex-shrink: 0;
         }
@@ -298,9 +320,9 @@
         .todo-card.done .todo-checkbox::after { opacity: 1; }
         
         .todo-content, .location-info { flex: 1; }
-        .todo-text, .location-name { color: #cbd5e1; font-weight: 600; }
-        .location-coords { font-size: 12px; color: #64748b; margin-top: 8px; font-family: monospace; }
-        .user-info { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+        .todo-text, .location-name { color: #efe3d6; font-weight: 600; }
+        .location-coords { font-size: 12px; color: #9c8a76; margin-top: 8px; font-family: monospace; }
+        .user-info { font-size: 11px; color: #b5a18d; margin-top: 4px; }
         
         .location-delete, .todo-delete {
             background: rgba(239, 68, 68, 0.2); border: none; color: #ef4444;
@@ -310,12 +332,12 @@
         .location-delete:hover, .todo-delete:hover { background: rgba(239, 68, 68, 0.3); }
         
         .maps-btn {
-            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            background: linear-gradient(135deg, #eaa94e 0%, #0891b2 100%);
             border: none; color: white; padding: 8px 14px; border-radius: 8px;
             font-size: 12px; cursor: pointer; transition: all 0.3s; display: inline-block; margin-top: 8px;
         }
         .maps-btn:hover { transform: translateY(-1px); }
-        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #9c8a76; }
         
         /* USER SELECTOR */
         .user-selector {
@@ -327,7 +349,7 @@
         .user-selector.hidden { display: none; }
         .user-selector h2 {
             font-size: 26px;
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
         .user-buttons { display: flex; gap: 20px; flex-direction: column; }
@@ -335,9 +357,9 @@
             padding: 16px 40px; border: none; border-radius: 12px;
             font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s; min-width: 220px;
         }
-        .user-btn.raphy { background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%); color: white; }
+        .user-btn.raphy { background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%); color: white; }
         .user-btn.kathi { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); color: white; }
-        .user-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4); }
+        .user-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(224, 122, 71, 0.4); }
 
         /* LOGIN */
         .login-screen {
@@ -349,30 +371,30 @@
         .login-screen.hidden { display: none; }
         .login-logo {
             width: 80px; height: 80px;
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
             border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4); overflow: hidden;
+            box-shadow: 0 20px 60px rgba(224, 122, 71, 0.4); overflow: hidden;
         }
         .login-logo img { width: 100%; height: 100%; object-fit: contain; }
         .login-screen h2 {
             font-size: 24px;
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
         .login-box { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
         .login-box input {
-            background: rgba(148, 163, 184, 0.1);
-            border: 1px solid rgba(148, 163, 184, 0.2);
+            background: rgba(196, 170, 140, 0.1);
+            border: 1px solid rgba(196, 170, 140, 0.2);
             border-radius: 12px; padding: 14px 16px;
-            color: #cbd5e1; font-size: 16px; outline: none; text-align: center;
+            color: #efe3d6; font-size: 16px; outline: none; text-align: center;
         }
-        .login-box input:focus { border-color: rgba(99, 102, 241, 0.5); }
+        .login-box input:focus { border-color: rgba(224, 122, 71, 0.5); }
         .login-box button {
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
             border: none; border-radius: 12px; color: white;
             padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;
         }
-        .login-box button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4); }
+        .login-box button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(224, 122, 71, 0.4); }
         .login-error { color: #ef4444; font-size: 13px; min-height: 18px; text-align: center; }
         
         /* MODALS */
@@ -384,31 +406,31 @@
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid rgba(148, 163, 184, 0.1);
+            background: linear-gradient(135deg, #2b201a 0%, #1a1310 100%);
+            border: 1px solid rgba(196, 170, 140, 0.1);
             border-radius: 20px; padding: 30px; max-width: 420px; width: 100%;
             animation: slideUp 0.3s ease-out;
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .modal-content h2 {
             margin-bottom: 20px;
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #e07a47 0%, #eaa94e 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
         .modal-content.emergency h2 { background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .settings-label { font-size: 12px; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: block; }
+        .settings-label { font-size: 12px; text-transform: uppercase; color: #9c8a76; margin-bottom: 8px; display: block; }
         .modal-content input {
-            width: 100%; background: rgba(148, 163, 184, 0.1);
-            border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 10px;
-            padding: 12px; color: #cbd5e1; margin-bottom: 12px; outline: none;
+            width: 100%; background: rgba(196, 170, 140, 0.1);
+            border: 1px solid rgba(196, 170, 140, 0.2); border-radius: 10px;
+            padding: 12px; color: #efe3d6; margin-bottom: 12px; outline: none;
         }
-        .modal-content input:focus { border-color: rgba(99, 102, 241, 0.5); }
+        .modal-content input:focus { border-color: rgba(224, 122, 71, 0.5); }
         .api-status { padding: 12px; border-radius: 8px; font-size: 12px; margin-bottom: 16px; text-align: center; }
         .api-status.connected { background: rgba(16, 185, 129, 0.15); color: #10b981; }
         .api-status.disconnected { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
         
         .phone-number {
-            font-size: 28px; font-weight: bold; color: #cbd5e1; font-family: monospace;
+            font-size: 28px; font-weight: bold; color: #efe3d6; font-family: monospace;
             margin: 24px 0; padding: 20px; background: rgba(239, 68, 68, 0.1);
             border-radius: 12px; text-align: center;
         }
@@ -418,17 +440,17 @@
         }
         .btn-primary { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; }
         .btn-call { background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); color: white; }
-        .btn-secondary { background: rgba(148, 163, 184, 0.1); color: #cbd5e1; }
+        .btn-secondary { background: rgba(196, 170, 140, 0.1); color: #efe3d6; }
         .btn-primary:hover, .btn-call:hover { transform: translateY(-2px); }
-        .btn-secondary:hover { background: rgba(148, 163, 184, 0.2); }
-        .api-help { color: #64748b; font-size: 12px; margin-top: 6px; display: block; }
+        .btn-secondary:hover { background: rgba(196, 170, 140, 0.2); }
+        .api-help { color: #9c8a76; font-size: 12px; margin-top: 6px; display: block; }
         
         /* TOAST */
         .toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            color: #cbd5e1; padding: 14px 24px; border-radius: 12px;
+            background: linear-gradient(135deg, #2b201a 0%, #1a1310 100%);
+            border: 1px solid rgba(224, 122, 71, 0.4);
+            color: #efe3d6; padding: 14px 24px; border-radius: 12px;
             font-size: 14px; font-weight: 600; z-index: 5000;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5); opacity: 0;
             transition: all 0.3s ease-out; max-width: 90%; text-align: center;
@@ -486,13 +508,21 @@
                     <img src="ralphiapp-logo.svg" alt="Logo" onerror="this.onerror=null;this.src='ralphiapp-logo.png'">
                 </div>
                 <button class="btn-sidebar active" data-tab="chat" title="Chat">💬</button>
-                <button class="btn-sidebar" data-tab="termine" title="Termine">📅</button>
                 <button class="btn-sidebar" data-tab="locations" title="Standorte">📍</button>
+                <div class="sidebar-divider"></div>
+                <button class="btn-sidebar" data-tab="termine" title="Termine">📅</button>
                 <button class="btn-sidebar" data-tab="todos" title="Aufgaben">📋</button>
-                <button class="btn-sidebar" data-tab="bier" title="Bierkalender">🍺</button>
+                <button class="btn-sidebar" data-tab="erinnerungen" title="Erinnerungen">🔔</button>
+                <div class="sidebar-divider"></div>
                 <button class="btn-sidebar btn-denkandich" onclick="denkAnDich()" title="Denk an dich">🧠</button>
+                <button class="btn-sidebar btn-aufans" onclick="aufAns()" title="Auf ans - kurz?">🍻</button>
+                <button class="btn-sidebar btn-brauchdi" onclick="brauchDi()" title="I brauch di">🆘</button>
                 <button class="btn-sidebar btn-whatsapp" onclick="openWhatsApp()" title="WhatsApp"><svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button>
-                <button class="btn-sidebar btn-emergency sidebar-spacer" onclick="showPhoneDialog()" title="Notruf">🚨</button>
+                <div class="sidebar-divider"></div>
+                <button class="btn-sidebar" data-tab="bier" title="Bierkalender"><span style="font-size:17px;line-height:1;">🍺📅</span></button>
+                <button class="btn-sidebar btn-gschichtl" onclick="openGschichtl()" title="Kathis Gschichtl-Sammlung">⭐</button>
+                <div class="sidebar-divider"></div>
+                <button class="btn-sidebar btn-emergency" onclick="showPhoneDialog()" title="Notruf">🚨</button>
             </div>
 
             <div class="main">
@@ -542,7 +572,7 @@
                         <div class="todos-container">
                             <div class="todos-input">
                                 <input type="text" id="termineText" placeholder="Termin (z.B. Kino, Mama Geburtstag)">
-                                <input type="datetime-local" id="termineDate" style="background:rgba(148,163,184,0.1);border:1px solid rgba(148,163,184,0.2);border-radius:10px;padding:12px;color:#cbd5e1;font-size:15px;outline:none;">
+                                <input type="datetime-local" id="termineDate" style="background:rgba(148,163,184,0.1);border:1px solid rgba(148,163,184,0.2);border-radius:10px;padding:12px;color:#efe3d6;font-size:15px;outline:none;">
                                 <button class="todos-btn" onclick="addTermin()">➕ Termin hinzufügen</button>
                             </div>
                             <div class="todos-list" id="termineList"></div>
@@ -551,6 +581,17 @@
 
                     <div id="bier-tab" class="tab-content">
                         <iframe src="https://kalender.digital/dacf783f5691603ccaa6?iframe=true" style="width:100%;height:100%;border:none;border-radius:12px;background:#fff;" frameborder="0"></iframe>
+                    </div>
+
+                    <div id="erinnerungen-tab" class="tab-content">
+                        <div class="todos-container">
+                            <div style="color:#b5a18d;font-size:13px;margin-bottom:4px;">🔔 Erinnerungen, die du dem anderen mitgibst</div>
+                            <div class="todos-input">
+                                <input type="text" id="erinnerungText" placeholder="z.B. Müll rausstellen, anrufen...">
+                                <button class="todos-btn" onclick="addErinnerung()">➕ Für den anderen merken</button>
+                            </div>
+                            <div class="todos-list" id="erinnerungenList"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -564,7 +605,7 @@
     <div class="modal" id="phoneModal">
         <div class="modal-content emergency">
             <h2>📞 Notruf</h2>
-            <p style="color:#94a3b8;">Tipp die Nummer zum Anrufen:</p>
+            <p style="color:#b5a18d;">Tipp die Nummer zum Anrufen:</p>
             <a class="phone-link" href="tel:+436502546801">📞 +43 650 25468 01</a>
             <div class="modal-buttons">
                 <button class="btn-secondary" onclick="copyPhoneNumber()">📋 Nummer kopieren</button>
@@ -580,7 +621,7 @@
             <div id="apiStatus" style="margin-top:4px;"></div>
             <span class="api-help">💬 Der Chat läuft über eine sichere Verbindung – kein Key in der App nötig.</span>
             <div class="modal-buttons">
-                <button class="btn-secondary" onclick="switchUser()" style="background:rgba(99,102,241,0.2);color:#818cf8;">🔄 Benutzer wechseln</button>
+                <button class="btn-secondary" onclick="switchUser()" style="background:rgba(99,102,241,0.2);color:#f0a866;">🔄 Benutzer wechseln</button>
                 <button class="btn-secondary" onclick="clearAllData()" style="background:rgba(245,158,11,0.2);color:#f59e0b;">🗑️ Alle Daten löschen</button>
                 <button class="btn-secondary" onclick="closeModal('settingsModal')">✕ Schließen</button>
             </div>
@@ -611,6 +652,7 @@
         let locations = [];
         let todos = [];
         let termine = [];
+        let erinnerungen = [];
         let isSending = false;
         let syncStarted = false;
 
@@ -690,20 +732,37 @@
                     .sort((a, b) => (a.when || '').localeCompare(b.when || ''));
                 renderTermine();
             });
-            // "Denk an dich" - hört auf neue Gedanken vom Partner
-            db.ref('gedanken').on('child_added', (snap) => {
-                const g = snap.val();
-                if (!g) return;
-                // Nur anzeigen wenn vom Partner und frisch (letzte 60 Sek)
-                if (g.from !== currentUser && Date.now() - (g.timestamp || 0) < 60000) {
-                    const fromLabel = g.from === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
-                    showToast('🧠 ' + fromLabel + ' denkt an dich! 💕', 'success');
+            // Live-Signale (denk an dich / i brauch di / auf ans) - Toast wenn frisch & vom Partner
+            db.ref('signale').on('child_added', (snap) => {
+                const s = snap.val();
+                if (!s) return;
+                if (s.from !== currentUser && Date.now() - (s.timestamp || 0) < 60000) {
+                    const fromLabel = s.from === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+                    if (s.type === 'brauchdi') showToast('🆘 ' + fromLabel + ' braucht dich grad!', 'error');
+                    else if (s.type === 'aufans') showToast('🍻 ' + fromLabel + ' fragt: Auf ans - kurz?', 'success');
+                    else showToast('🧠 ' + fromLabel + ' denkt an dich! 💕', 'success');
                 }
             });
-            // Letzter Gedanke - wird als Banner angezeigt (auch wenn man's live verpasst hat)
-            db.ref('letzterGedanke').on('value', (snap) => {
-                const g = snap.val();
-                renderGedankeBanner(g);
+            // Letztes Signal - als Banner (auch wenn man's live verpasst hat)
+            db.ref('letztesSignal').on('value', (snap) => {
+                renderGedankeBanner(snap.val());
+            });
+            // Antwort auf "Auf ans" (👍/👎)
+            db.ref('aufansAntwort').on('value', (snap) => {
+                const a = snap.val();
+                if (!a || a.to !== currentUser) return;
+                if (Date.now() - (a.timestamp || 0) < 120000) {
+                    const fromLabel = a.from === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+                    if (a.answer === 'ja') showToast('🍻 ' + fromLabel + ' sagt JA - auf ans! 🎉', 'success');
+                    else showToast('😅 ' + fromLabel + ' kann grad nicht', '');
+                }
+            });
+            // Erinnerungen vom Partner
+            db.ref('erinnerungen').on('value', (snap) => {
+                const val = snap.val() || {};
+                erinnerungen = Object.keys(val).map(k => ({ _key: k, ...val[k] }))
+                    .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                renderErinnerungen();
             });
         }
 
@@ -720,7 +779,7 @@
                 // Schon synchronisiert - nur Ansicht aktualisieren (eigene/fremde Nachrichten)
                 renderAll();
                 // Banner neu bewerten (Gedanke vom neuen Partner?)
-                db.ref('letzterGedanke').once('value').then(snap => renderGedankeBanner(snap.val()));
+                db.ref('letztesSignal').once('value').then(snap => renderGedankeBanner(snap.val()));
             }
         }
 
@@ -739,7 +798,7 @@
             }
         }, 4000);
 
-        function renderAll() { renderChat(); renderLocations(); renderTodos(); renderTermine(); }
+        function renderAll() { renderChat(); renderLocations(); renderTodos(); renderTermine(); renderErinnerungen(); }
 
         // ===== TABS =====
         tabButtons.forEach(btn => {
@@ -752,6 +811,7 @@
                 if (tabName === 'chat') { headerTitle.textContent = '💬 Chat'; setTimeout(() => chatArea.scrollTop = chatArea.scrollHeight, 0); }
                 else if (tabName === 'locations') headerTitle.textContent = '📍 Standorte';
                 else if (tabName === 'todos') headerTitle.textContent = '📋 Aufgaben';
+                else if (tabName === 'erinnerungen') headerTitle.textContent = '🔔 Erinnerungen';
                 else if (tabName === 'termine') headerTitle.textContent = '📅 Termine';
                 else if (tabName === 'bier') headerTitle.textContent = '🍺 Bierkalender';
             });
@@ -851,6 +911,9 @@
         // ===== WHATSAPP & PHONE =====
         function openWhatsApp() {
             window.open('https://wa.me/436502546801?text=Hallo%20-%20i%20brauch%20deine%20Hilfe!', '_blank');
+        }
+        function openGschichtl() {
+            window.open('https://www.dropbox.com/scl/fi/8owhyy7msmvr7d6b7s8qy/Kathis-Gschichtl-Sammlung-Mai-2026.xlsx?rlkey=e61axxq6sm0k1bdyv1yn0arrb&st=6diwouxr&dl=0', '_blank');
         }
         function showPhoneDialog() { document.getElementById('phoneModal').classList.add('active'); }
         function copyPhoneNumber() {
@@ -1006,7 +1069,7 @@
                 div.innerHTML = `
                     <div style="display:flex;flex:1;flex-direction:column;">
                         <div class="todo-text">📅 ${t.text}</div>
-                        <div style="color:#06b6d4;font-size:13px;margin-top:2px;">${dateStr}</div>
+                        <div style="color:#eaa94e;font-size:13px;margin-top:2px;">${dateStr}</div>
                         <div class="user-info">von ${userLabel}</div>
                     </div>
                     <button class="todo-delete" onclick="deleteTermin('${t._key}')">🗑️</button>
@@ -1028,40 +1091,110 @@
 
         function deleteTermin(key) { db.ref('termine/' + key).remove(); }
 
-        // ===== DENK AN DICH =====
-        function denkAnDich() {
+        // ===== SIGNALE: Denk an dich / I brauch di / Auf ans =====
+        function sendeSignal(type) {
             const now = Date.now();
-            db.ref('gedanken').push({ from: currentUser, timestamp: now });
-            // Letzten Gedanken speichern (bleibt erhalten bis zum nächsten)
-            db.ref('letzterGedanke').set({ from: currentUser, timestamp: now });
+            db.ref('signale').push({ from: currentUser, type, timestamp: now });
+            db.ref('letztesSignal').set({ from: currentUser, type, timestamp: now });
+        }
+        function denkAnDich() {
+            sendeSignal('denk');
             const partner = currentUser === 'raphy' ? '💜 Kathi' : '🔥 Raphy';
             showToast('🧠 ' + partner + ' weiß jetzt, dass du an sie/ihn denkst! 💕', 'success');
         }
+        function brauchDi() {
+            sendeSignal('brauchdi');
+            const partner = currentUser === 'raphy' ? '💜 Kathi' : '🔥 Raphy';
+            showToast('🆘 ' + partner + ' kriegt dein Signal - du brauchst sie/ihn!', 'success');
+        }
+        function aufAns() {
+            sendeSignal('aufans');
+            const partner = currentUser === 'raphy' ? '💜 Kathi' : '🔥 Raphy';
+            showToast('🍻 Anfrage an ' + partner + ' geschickt: Auf ans - kurz?', 'success');
+        }
 
-        let dismissedGedanke = 0;
-        function renderGedankeBanner(g) {
+        // Antwort auf eine "Auf ans"-Anfrage (vom Banner aus)
+        function aufAnsAntwort(answer) {
+            db.ref('aufansAntwort').set({ from: currentUser, to: (currentUser === 'raphy' ? 'kathi' : 'raphy'), answer, timestamp: Date.now() });
+            // Signal als erledigt markieren (Banner weg)
+            if (lastSignal) dismissedSignal = lastSignal.timestamp;
+            document.getElementById('gedankeBanner').style.display = 'none';
+            showToast(answer === 'ja' ? '🍻 Zuagsogt! 🎉' : '😅 Abgsogt - vielleicht nächstes Mal', '');
+        }
+
+        let dismissedSignal = 0;
+        let lastSignal = null;
+        function renderGedankeBanner(s) {
             const banner = document.getElementById('gedankeBanner');
-            if (!banner || !g || !g.from) { if (banner) banner.style.display = 'none'; return; }
-            // Nur Gedanken vom PARTNER anzeigen (nicht die eigenen)
-            if (g.from === currentUser) { banner.style.display = 'none'; return; }
-            // Wenn schon weggeklickt, nicht nochmal zeigen
-            if (g.timestamp <= dismissedGedanke) { banner.style.display = 'none'; return; }
-            const fromLabel = g.from === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
-            const d = new Date(g.timestamp);
+            if (!banner || !s || !s.from) { if (banner) banner.style.display = 'none'; return; }
+            if (s.from === currentUser) { banner.style.display = 'none'; return; }
+            if (s.timestamp <= dismissedSignal) { banner.style.display = 'none'; return; }
+            lastSignal = s;
+            const fromLabel = s.from === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+            const d = new Date(s.timestamp);
             const heute = new Date().toDateString() === d.toDateString();
             const zeit = heute
                 ? 'heute um ' + d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' })
                 : 'am ' + d.toLocaleDateString('de-AT', { day: '2-digit', month: '2-digit' }) + ' um ' + d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' });
-            banner.innerHTML = '🧠 ' + fromLabel + ' hat ' + zeit + ' an dich gedacht! <span style="opacity:0.6;font-size:12px;">(tippen zum Ausblenden)</span>';
+
+            let inhalt = '';
+            banner.className = 'gedanke-banner';
+            if (s.type === 'brauchdi') {
+                banner.classList.add('banner-brauchdi');
+                inhalt = '🆘 ' + fromLabel + ' braucht dich grad! (' + zeit + ') <span style="opacity:0.6;font-size:12px;">(tippen zum Ausblenden)</span>';
+                banner.onclick = dismissGedanke;
+            } else if (s.type === 'aufans') {
+                banner.classList.add('banner-aufans');
+                inhalt = '🍻 ' + fromLabel + ' fragt: Auf ans - kurz? ' +
+                    '<button onclick="event.stopPropagation();aufAnsAntwort(\'ja\')" style="margin-left:8px;background:#16a34a;color:#fff;border:none;border-radius:8px;padding:4px 12px;font-weight:700;cursor:pointer;">Ja 🍻</button>' +
+                    '<button onclick="event.stopPropagation();aufAnsAntwort(\'nein\')" style="margin-left:6px;background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:8px;padding:4px 12px;font-weight:700;cursor:pointer;">Na</button>';
+                banner.onclick = null;
+            } else {
+                inhalt = '🧠 ' + fromLabel + ' hat ' + zeit + ' an dich gedacht! <span style="opacity:0.6;font-size:12px;">(tippen zum Ausblenden)</span>';
+                banner.onclick = dismissGedanke;
+            }
+            banner.innerHTML = inhalt;
             banner.style.display = 'flex';
-            lastGedankeTimestamp = g.timestamp;
         }
 
-        let lastGedankeTimestamp = 0;
         function dismissGedanke() {
-            dismissedGedanke = lastGedankeTimestamp;
+            if (lastSignal) dismissedSignal = lastSignal.timestamp;
             document.getElementById('gedankeBanner').style.display = 'none';
         }
+
+        // ===== ERINNERUNGEN AN DEN ANDEREN =====
+        function renderErinnerungen() {
+            const list = document.getElementById('erinnerungenList');
+            if (!list) return;
+            list.innerHTML = '';
+            if (erinnerungen.length === 0) { list.innerHTML = '<div class="empty-state">🔔 Keine Erinnerungen</div>'; return; }
+            erinnerungen.forEach((e) => {
+                const div = document.createElement('div');
+                div.className = 'todo-card' + (e.done ? ' done' : '');
+                const fromLabel = e.from === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+                const forLabel = e.forUser === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+                div.innerHTML = `
+                    <div style="display:flex;flex:1;flex-direction:column;" onclick="toggleErinnerung('${e._key}', ${!e.done})">
+                        <div class="todo-text">🔔 ${e.text}</div>
+                        <div class="user-info">für ${forLabel} · von ${fromLabel}</div>
+                    </div>
+                    <button class="todo-delete" onclick="deleteErinnerung('${e._key}')">🗑️</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+        function addErinnerung() {
+            const text = document.getElementById('erinnerungText').value.trim();
+            if (!text) { showToast('Bitte Erinnerung eingeben!', 'error'); return; }
+            // Erinnerung ist IMMER für den Partner gedacht
+            const forUser = currentUser === 'raphy' ? 'kathi' : 'raphy';
+            db.ref('erinnerungen').push({ text, from: currentUser, forUser, done: false, timestamp: Date.now() });
+            document.getElementById('erinnerungText').value = '';
+            const partner = forUser === 'raphy' ? '🔥 Raphy' : '💜 Kathi';
+            showToast('🔔 Erinnerung für ' + partner + ' gespeichert!', 'success');
+        }
+        function toggleErinnerung(key, done) { db.ref('erinnerungen/' + key + '/done').set(done); }
+        function deleteErinnerung(key) { db.ref('erinnerungen/' + key).remove(); }
     </script>
 </body>
 </html>
