@@ -443,12 +443,9 @@
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <h2>⚙️ Einstellungen</h2>
-            <label class="settings-label">Claude API Key (für Chat mit Claude)</label>
-            <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
-            <span class="api-help">🔐 Hol dir einen Key: console.anthropic.com/keys</span>
-            <div id="apiStatus" style="margin-top:16px;"></div>
+            <div id="apiStatus" style="margin-top:4px;"></div>
+            <span class="api-help">💬 Der Chat läuft über eine sichere Verbindung – kein Key in der App nötig.</span>
             <div class="modal-buttons">
-                <button class="btn-primary" onclick="saveSettings()">✓ Speichern</button>
                 <button class="btn-secondary" onclick="clearAllData()" style="background:rgba(245,158,11,0.2);color:#f59e0b;">🗑️ Alle Daten löschen</button>
                 <button class="btn-secondary" onclick="closeModal('settingsModal')">✕ Schließen</button>
             </div>
@@ -470,6 +467,7 @@
         const db = firebase.database();
 
         // ===== STATE =====
+        const USE_FUNCTION = true; // Chat läuft über sichere Netlify Function
         let currentUser = localStorage.getItem('ralphiapp_user') || null;
         let apiKey = localStorage.getItem('ralphiapp_api_key') || '';
         let messages = [];
@@ -490,7 +488,6 @@
         const locationsList = document.getElementById('locationsList');
         const todoInput = document.getElementById('todoInput');
         const todosList = document.getElementById('todosList');
-        const apiKeyInput = document.getElementById('apiKeyInput');
         const tabButtons = document.querySelectorAll('[data-tab]');
         const tabs = document.querySelectorAll('.tab-content');
 
@@ -609,27 +606,23 @@
             chatArea.scrollTop = chatArea.scrollHeight;
 
             let reply = '';
-            if (!apiKey) {
+            if (!apiKey && !USE_FUNCTION) {
                 await new Promise(r => setTimeout(r, 700));
                 const demos = ['✅ Alles klar!', '👍 Verstanden!', '😎 Perfekt!', '🔥 Wird gemacht!', 'Jo! 👌', '💪 Läuft!'];
                 reply = demos[Math.floor(Math.random()*demos.length)] + ' (Demo - API-Key in ⚙️ für echten Chat)';
             } else {
                 try {
-                    const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    // Über die sichere Netlify Function (Key ist dort versteckt)
+                    const response = await fetch('/.netlify/functions/chat', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-                        body: JSON.stringify({
-                            model: 'claude-opus-4-6',
-                            max_tokens: 400,
-                            system: 'Du bist RalphiApp, die persönliche Helfer-App von Raphy für ihn und seine Freundin Kathi. Antworte kurz, herzlich und im lockeren oberösterreichischen Dialekt. Max 2-3 Sätze, gelegentlich Emojis.',
-                            messages: [{ role: 'user', content: text }]
-                        })
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: text })
                     });
                     if (!response.ok) throw new Error('Status ' + response.status);
                     const data = await response.json();
-                    reply = data.content[0].text;
+                    reply = data.reply || '⚠️ Keine Antwort erhalten.';
                 } catch (e) {
-                    reply = '⚠️ API-Fehler. Key ok? (Prüf ⚙️ Einstellungen).';
+                    reply = '⚠️ Chat-Fehler. Läuft die Netlify Function? (CLAUDE_API_KEY hinterlegt?)';
                 }
             }
             // Antwort von RalphiApp in Firebase (sehen beide)
@@ -651,19 +644,11 @@
         }
 
         // ===== SETTINGS =====
-        function openSettings() { apiKeyInput.value = apiKey; updateApiStatus(); document.getElementById('settingsModal').classList.add('active'); }
+        function openSettings() { updateApiStatus(); document.getElementById('settingsModal').classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function saveSettings() {
-            apiKey = apiKeyInput.value.trim();
-            if (apiKey) localStorage.setItem('ralphiapp_api_key', apiKey);
-            else localStorage.removeItem('ralphiapp_api_key');
-            updateApiStatus();
-            closeModal('settingsModal');
-            showToast('✅ Einstellungen gespeichert!', 'success');
-        }
         function updateApiStatus() {
             const s = document.getElementById('apiStatus');
-            s.innerHTML = apiKey ? '<div class="api-status connected">✅ API aktiv - Chat mit Claude läuft</div>' : '<div class="api-status disconnected">⚠️ Kein Key - Demo-Modus</div>';
+            s.innerHTML = '<div class="api-status connected">✅ Chat mit Claude aktiv</div>';
         }
         function clearAllData() {
             if (confirm('🚨 Wirklich ALLES löschen? (Chats, Standorte, Aufgaben - auch bei Kathi!)')) {
