@@ -737,7 +737,7 @@
             } else {
                 loginScreen.classList.remove('hidden');
             }
-        }, 2600);
+        }, 4000);
 
         function renderAll() { renderChat(); renderLocations(); renderTodos(); renderTermine(); }
 
@@ -822,7 +822,7 @@
                     const response = await fetch('/.netlify/functions/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: text })
+                        body: JSON.stringify({ message: text, user: currentUser })
                     });
                     if (!response.ok) throw new Error('Status ' + response.status);
                     const data = await response.json();
