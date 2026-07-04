@@ -13,7 +13,11 @@ async function loadRows(filter: Filter): Promise<ModRow[]> {
     const supabase = createClient();
     let query = supabase
       .from("submissions")
-      .select("id, status, time_seconds, country_id, created_at, video_public, via_event, profiles(username), countries(flag)")
+      // profiles!...user_id_fkey disambiguiert: submissions hat zwei FKs auf
+      // profiles (user_id + reviewed_by).
+      .select(
+        "id, status, time_seconds, country_id, created_at, video_public, via_event, profiles!submissions_user_id_fkey(username), countries(flag)",
+      )
       .order("created_at", { ascending: false });
     if (filter !== "alle") query = query.eq("status", filter);
     const { data } = await query;
