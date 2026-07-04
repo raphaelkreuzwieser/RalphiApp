@@ -1,11 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Play } from "lucide-react";
-import { Card, Btn } from "@/components/ui";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Play, Trophy, Plus } from "lucide-react";
+import { Card, Btn, SectionTitle } from "@/components/ui";
 import { LedTime } from "@/components/LedTime";
 import { VideoOverlay } from "@/components/VideoOverlay";
 import type { Country, RankingRow } from "@/lib/database.types";
+import type { EventOverview } from "@/lib/events";
+import { createEvent } from "../events/actions";
 
 type RankView = "official" | "events";
 
@@ -13,14 +17,29 @@ export function RankingScreen({
   rows,
   countries,
   myUsername,
+  events,
 }: {
   rows: RankingRow[];
   countries: Country[];
   myUsername: string | null;
+  events: EventOverview[];
 }) {
+  const router = useRouter();
   const [view, setView] = useState<RankView>("official");
   const [land, setLand] = useState("EU");
   const [videoEntry, setVideoEntry] = useState<RankingRow | null>(null);
+  const [newEventName, setNewEventName] = useState("");
+  const [creating, startCreate] = useTransition();
+  const [eventError, setEventError] = useState<string | null>(null);
+
+  function create() {
+    setEventError(null);
+    startCreate(async () => {
+      const res = await createEvent(newEventName);
+      if (res.error) setEventError(res.error);
+      else if (res.eventId) router.push(`/events/${res.eventId}`);
+    });
+  }
 
   const flagOf = useMemo(() => {
     const m = new Map(countries.map((c) => [c.id, c.flag]));
@@ -114,12 +133,61 @@ export function RankingScreen({
         </>
       ) : (
         <>
+          {events.length === 0 ? (
+            <Card>
+              <div className="text-center text-muted">
+                Noch keine aktiven Events – starte die erste Challenge! 🎉
+              </div>
+            </Card>
+          ) : (
+            events.map((ev) => (
+              <Link key={ev.id} href={`/events/${ev.id}`}>
+                <Card className="mb-2.5">
+                  <div className="flex items-center justify-between gap-2.5">
+                    <div>
+                      <div className="text-[15px] font-extrabold text-creme">🎉 {ev.name}</div>
+                      <div className="mt-0.5 text-xs text-muted">
+                        Event-Admin:{" "}
+                        <span className="font-bold text-bussi">@{ev.adminUsername}</span> ·{" "}
+                        {ev.confirmedCount} Zeiten
+                        {ev.isMine && ev.pendingCount > 0 && (
+                          <span className="text-gold"> · {ev.pendingCount} zu prüfen!</span>
+                        )}
+                      </div>
+                    </div>
+                    <Trophy size={20} className="text-gold" />
+                  </div>
+                </Card>
+              </Link>
+            ))
+          )}
+
+          <SectionTitle>Eigene Challenge starten</SectionTitle>
           <Card>
-            <div className="text-center text-muted">Noch keine aktiven Events.</div>
+            <div className="mb-2.5 text-[13px] text-muted">
+              Erstell ein internes Ranking für dein Fest, deine Bar oder dein Festival. Du wirst
+              automatisch Event-Admin und bestätigst die Zeiten deiner Gäste.
+            </div>
+            {eventError && (
+              <div className="mb-2.5 rounded-xl border border-rot-dark bg-[rgba(232,40,60,0.12)] p-2.5 text-[13px] text-creme">
+                {eventError}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <input
+                className="flex-1 rounded-[10px] border border-line bg-panel2 p-3 text-[15px] text-creme placeholder:text-muted focus:border-rot focus:outline-none"
+                placeholder='z. B. "Beachparty XXL – Wels"'
+                value={newEventName}
+                onChange={(e) => setNewEventName(e.target.value)}
+              />
+              <Btn className="px-3 py-2" disabled={creating || newEventName.trim().length < 3} onClick={create}>
+                <Plus size={16} />
+              </Btn>
+            </div>
           </Card>
-          <p className="mt-3 text-center text-xs text-muted">
+          <p className="mt-2.5 text-center text-xs text-muted">
             ℹ️ Event-Zeiten zählen nur intern. Ins offizielle Ranking kommen Läufe nur mit
-            Videobeweis nach Prüfung durchs Gschpusi-Team. (Events: M5)
+            Videobeweis nach Prüfung durchs Gschpusi-Team.
           </p>
         </>
       )}
