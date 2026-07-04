@@ -1,0 +1,22 @@
+{
+  "name": "Gschpusi Shotrace",
+  "short_name": "Shotrace",
+  "description": "Shot-Wetttrinken mit elektronischer Zeitmessung. Wie schnell bist du? 🏁",
+  "id": "/",
+  "start_url": "/race",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#160A0E",
+  "theme_color": "#E8283C",
+  "lang": "de-AT",
+  "categories": ["lifestyle", "social", "sports"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

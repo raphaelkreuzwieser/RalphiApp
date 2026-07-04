@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Design-Tokens (Abschnitt 5) – auch als CSS-Variablen für Nicht-Tailwind-Kontexte */
+  --bg: #160a0e;
+  --panel: #241218;
+  --panel2: #2e171f;
+  --line: #42222c;
+  --rot: #e8283c;
+  --rot-dark: #b01528;
+  --bussi: #ff8fa3;
+  --gold: #ffb347;
+  --creme: #fff3ee;
+  --muted: #b98e97;
+
+  /* LED-Look wie am Display (Prototyp: Courier New) */
+  --font-mono: "Courier New", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* Body-Schrift (Prototyp: Segoe UI / System) */
+  --font-body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+
+  /* Safe-Area-Insets, mit Fallback 0 */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--creme);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+  overscroll-behavior-y: none;
+}
+
+@layer components {
+  /* LED-Zeitanzeige wie am echten Shotrace Pack:
+     Monospace, fett, Gold, leichter Glow, tabular-nums. */
+  .led {
+    font-family: theme("fontFamily.mono");
+    font-weight: 800;
+    color: var(--gold);
+    text-shadow: 0 0 12px rgba(255, 179, 71, 0.55);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+
+  /* Weißer, abgerundeter Chip als Untergrund für Produktbilder/Logos
+     (dunkler Hintergrund!). */
+  .white-chip {
+    background: #ffffff;
+    border-radius: 0.9rem;
+  }
+
+  /* Panel-Karte, Standard-Container im Design-System. */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+  }
+
+  .btn-primary {
+    background: var(--rot);
+    color: var(--creme);
+    border-radius: 0.9rem;
+    font-weight: 700;
+    transition: filter 0.15s ease, transform 0.05s ease;
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+  .btn-primary:disabled {
+    filter: grayscale(0.4) brightness(0.7);
+    cursor: not-allowed;
+  }
+}
+
+/* Dünne, dezente Scrollbar passend zum Nachtclub-Look */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
