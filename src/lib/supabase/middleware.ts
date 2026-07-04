@@ -1,10 +1,27 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Nur für Eingeloggte erreichbar.
+const PROTECTED_PREFIXES = [
+  "/race",
+  "/ranking",
+  "/checkin",
+  "/freunde",
+  "/profil",
+  "/events",
+  "/benachrichtigungen",
+  "/admin",
+];
+// Für Eingeloggte gesperrt (dann direkt in die App).
+const AUTH_ONLY = ["/login", "/registrieren", "/passwort-vergessen"];
+
+function isProtected(path: string) {
+  return PROTECTED_PREFIXES.some((p) => path === p || path.startsWith(p + "/"));
+}
+
 /**
- * Session-Refresh in der Middleware: hält die Supabase-Auth-Cookies frisch,
- * damit Server Components eine gültige Session sehen. Blockt hier noch nicht –
- * seitenspezifischer Schutz (z. B. /admin) passiert serverseitig in den Seiten.
+ * Session-Refresh + Auth-Gating in der Middleware. Hält die Supabase-Auth-Cookies
+ * frisch und leitet nicht eingeloggte User von geschützten Routen auf /login.
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -35,7 +52,25 @@ export async function updateSession(request: NextRequest) {
 
   // WICHTIG: refresht die Session. Nicht zwischen createServerClient und
   // getUser() eigenen Code einfügen (sonst schwer debugbare Logout-Bugs).
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const path = request.nextUrl.pathname;
+
+  if (!user && isProtected(path)) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/login";
+    loginUrl.search = "";
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (user && AUTH_ONLY.some((p) => path === p)) {
+    const appUrl = request.nextUrl.clone();
+    appUrl.pathname = "/race";
+    appUrl.search = "";
+    return NextResponse.redirect(appUrl);
+  }
 
   return supabaseResponse;
 }

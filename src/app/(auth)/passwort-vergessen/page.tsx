@@ -1,12 +1,13 @@
-import { AuthStub } from "@/components/AuthStub";
+import { AuthBrand } from "@/components/auth/AuthBrand";
+import { PasswortVergessenForm } from "./PasswortVergessenForm";
 
 export const metadata = { title: "Passwort vergessen" };
 
 export default function PasswortVergessenPage() {
   return (
-    <AuthStub
-      title="Passwort vergessen"
-      hint="Kein Problem – wir schicken dir einen Link zum Zurücksetzen."
-    />
+    <>
+      <AuthBrand subtitle="Kein Problem – wir schicken dir einen Link zum Zurücksetzen." />
+      <PasswortVergessenForm />
+    </>
   );
 }

@@ -2,17 +2,28 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Globe, ShoppingBag, ExternalLink, LogOut } from "lucide-react";
-import { Avatar, Card, Btn, SectionTitle } from "@/components/ui";
+import { Globe, ShoppingBag, ExternalLink } from "lucide-react";
+import { Avatar, Card, SectionTitle } from "@/components/ui";
 import { LedTime } from "@/components/LedTime";
 import { Toggle } from "@/components/Toggle";
+import { LogoutButton } from "@/components/LogoutButton";
 import { EXTERNAL_LINKS, AGE_NOTICE } from "@/lib/assets";
 
-export function ProfileScreen() {
-  // Platzhalter bis Auth/Profil (M2) angebunden ist.
-  const username = "Gast";
-  const bestzeit: number | null = null;
-  const [shareLoc, setShareLoc] = useState(true);
+export function ProfileScreen({
+  username,
+  countryLabel,
+  memberSince,
+  bestTime,
+  shareLocation,
+}: {
+  username: string;
+  countryLabel: string;
+  memberSince: string;
+  bestTime: number | null;
+  shareLocation: boolean;
+}) {
+  // Toggles lokal – Persistenz (profiles.share_location, Push) folgt in M6/M7.
+  const [shareLoc, setShareLoc] = useState(shareLocation);
   const [push, setPush] = useState(false);
 
   return (
@@ -22,8 +33,10 @@ export function ProfileScreen() {
           <Avatar name={username} size={66} />
         </div>
         <div className="mt-2.5 text-lg font-black text-creme">@{username}</div>
-        <div className="text-[13px] text-muted">🇦🇹 Österreich · dabei seit Juli 2026</div>
-        <LedTime seconds={bestzeit} size="lg" className="mt-2.5 block" />
+        <div className="text-[13px] text-muted">
+          {countryLabel} · dabei seit {memberSince}
+        </div>
+        <LedTime seconds={bestTime} size="lg" className="mt-2.5 block" />
         <div className="text-[11px] tracking-[0.12em] text-muted">
           DEINE BESTZEIT · FÜR FREUNDE IMMER SICHTBAR
         </div>
@@ -57,9 +70,7 @@ export function ProfileScreen() {
         <Toggle on={push} onClick={() => setPush((v) => !v)} label="Push" />
       </Card>
 
-      <Btn kind="ghost" className="mt-2.5 w-full" disabled>
-        <LogOut size={15} /> Abmelden
-      </Btn>
+      <LogoutButton />
 
       <div className="mt-[18px] text-center text-[11px] text-muted">
         {AGE_NOTICE}
