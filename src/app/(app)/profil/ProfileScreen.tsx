@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Globe, ShoppingBag, ExternalLink } from "lucide-react";
 import { Avatar, Card, SectionTitle } from "@/components/ui";
 import { LedTime } from "@/components/LedTime";
 import { Toggle } from "@/components/Toggle";
+import { PushToggle } from "@/components/PushToggle";
 import { LogoutButton } from "@/components/LogoutButton";
 import { EXTERNAL_LINKS, AGE_NOTICE } from "@/lib/assets";
+import { updateShareLocation } from "./actions";
 
 export function ProfileScreen({
   username,
@@ -22,9 +24,17 @@ export function ProfileScreen({
   bestTime: number | null;
   shareLocation: boolean;
 }) {
-  // Toggles lokal – Persistenz (profiles.share_location, Push) folgt in M6/M7.
   const [shareLoc, setShareLoc] = useState(shareLocation);
-  const [push, setPush] = useState(false);
+  const [, startSave] = useTransition();
+
+  function toggleShareLoc() {
+    const next = !shareLoc;
+    setShareLoc(next); // optimistisch
+    startSave(async () => {
+      const res = await updateShareLocation(next);
+      if (!res.ok) setShareLoc(!next); // rollback bei Fehler
+    });
+  }
 
   return (
     <>
@@ -63,12 +73,9 @@ export function ProfileScreen({
       <SectionTitle>Einstellungen</SectionTitle>
       <Card className="mb-2 flex items-center justify-between">
         <div className="text-sm text-creme">📍 Standort bei Check-ins teilen</div>
-        <Toggle on={shareLoc} onClick={() => setShareLoc((v) => !v)} label="Standort teilen" />
+        <Toggle on={shareLoc} onClick={toggleShareLoc} label="Standort teilen" />
       </Card>
-      <Card className="mb-2 flex items-center justify-between">
-        <div className="text-sm text-creme">🔔 Push-Benachrichtigungen</div>
-        <Toggle on={push} onClick={() => setPush((v) => !v)} label="Push" />
-      </Card>
+      <PushToggle />
 
       <LogoutButton />
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 
 export type EventState = { error?: string; ok?: boolean; eventId?: string };
 
@@ -69,11 +69,25 @@ export async function moderateEventSubmission(
   decision: "confirmed" | "rejected",
 ): Promise<EventState> {
   const supabase = createClient();
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("event_submissions")
     .update({ status: decision })
-    .eq("id", id);
-  if (error) return { error: "Konnte nicht bestätigen (nur der Event-Admin darf das)." };
+    .eq("id", id)
+    .select("user_id, time_seconds")
+    .maybeSingle();
+  if (error || !updated) return { error: "Konnte nicht bestätigen (nur der Event-Admin darf das)." };
+
+  // Notification an den Eincheckenden (Insert braucht Service-Role).
+  try {
+    const admin = createAdminClient();
+    await admin.from("notifications").insert({
+      user_id: updated.user_id,
+      type: decision === "confirmed" ? "event_confirmed" : "event_rejected",
+      payload: { event_id: eventId, time_seconds: updated.time_seconds },
+    });
+  } catch {
+    /* ohne Service-Role keine Notification */
+  }
 
   revalidatePath(`/events/${eventId}`);
   revalidatePath("/admin/moderation");
