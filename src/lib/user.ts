@@ -1,6 +1,28 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/database.types";
 
+/** Ist der aktuelle User Gschpusi-Admin? (für den Admin-Zugang im Header) */
+export async function getIsAdmin(): Promise<boolean> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return false;
+  }
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return false;
+    const { data } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    return data?.role === "admin";
+  } catch {
+    return false;
+  }
+}
+
 export interface CurrentProfile {
   profile: Profile;
   countryLabel: string; // "🇦🇹 Österreich"
