@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "@/lib/notify";
 
 export type EventState = { error?: string; ok?: boolean; eventId?: string };
 
@@ -77,17 +78,15 @@ export async function moderateEventSubmission(
     .maybeSingle();
   if (error || !updated) return { error: "Konnte nicht bestätigen (nur der Event-Admin darf das)." };
 
-  // Notification an den Eincheckenden (Insert braucht Service-Role).
-  try {
-    const admin = createAdminClient();
-    await admin.from("notifications").insert({
-      user_id: updated.user_id,
-      type: decision === "confirmed" ? "event_confirmed" : "event_rejected",
-      payload: { event_id: eventId, time_seconds: updated.time_seconds },
-    });
-  } catch {
-    /* ohne Service-Role keine Notification */
-  }
+  // Notification (+ Push) an den Eincheckenden.
+  await createNotification(
+    updated.user_id,
+    decision === "confirmed" ? "event_confirmed" : "event_rejected",
+    { event_id: eventId, time_seconds: updated.time_seconds },
+    decision === "confirmed"
+      ? { title: "Event-Zeit bestätigt 🎉", body: "Deine Zeit zählt jetzt im Event-Ranking.", url: `/events/${eventId}` }
+      : { title: "Event-Zeit abgelehnt", body: "Deine Event-Zeit wurde nicht bestätigt.", url: `/events/${eventId}` },
+  );
 
   revalidatePath(`/events/${eventId}`);
   revalidatePath("/admin/moderation");

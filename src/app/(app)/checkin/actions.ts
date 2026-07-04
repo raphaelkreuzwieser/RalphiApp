@@ -1,17 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "@/lib/notify";
 
 export type CheckinState = { error?: string; ok?: boolean };
-
-function adminOrNull() {
-  try {
-    return createAdminClient();
-  } catch {
-    return null;
-  }
-}
 
 /* ---------------- Einchecken ----------------
    Ein neuer Check-in "ersetzt" den alten im Feed automatisch (Feed zeigt nur
@@ -64,21 +57,19 @@ export async function sendReaction(checkinId: string, text: string): Promise<Che
     .insert({ checkin_id: checkinId, user_id: user.id, text: trimmed });
   if (error) return { error: "Reaktion konnte nicht gesendet werden." };
 
-  // Notification an den Eincheckenden.
+  // Notification (+ Push) an den Eincheckenden.
   const { data: c } = await supabase
     .from("checkins")
     .select("user_id")
     .eq("id", checkinId)
     .maybeSingle();
-  if (c) {
-    const admin = adminOrNull();
-    if (admin) {
-      await admin.from("notifications").insert({
-        user_id: c.user_id,
-        type: "reaction",
-        payload: { checkin_id: checkinId, from: user.id, text: trimmed },
-      });
-    }
+  if (c && c.user_id !== user.id) {
+    await createNotification(
+      c.user_id,
+      "reaction",
+      { checkin_id: checkinId, from: user.id, text: trimmed },
+      { title: "Neue Reaktion ❤️", body: trimmed, url: "/checkin" },
+    );
   }
 
   revalidatePath("/checkin");

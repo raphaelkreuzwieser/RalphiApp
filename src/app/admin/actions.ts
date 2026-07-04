@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { assertAdminAction } from "@/lib/admin";
+import { createNotification } from "@/lib/notify";
 
 export type AdminState = { error?: string; ok?: boolean };
 
@@ -26,12 +27,15 @@ export async function moderateSubmission(
 
   if (error || !sub) return { error: "Konnte Status nicht ändern." };
 
-  // Notification an den User (Insert braucht Service-Role – keine Insert-Policy).
-  await g.adminClient.from("notifications").insert({
-    user_id: sub.user_id,
-    type: decision === "approved" ? "submission_approved" : "submission_rejected",
-    payload: { submission_id: id, time_seconds: sub.time_seconds },
-  });
+  // Notification (+ Push) an den User.
+  await createNotification(
+    sub.user_id,
+    decision === "approved" ? "submission_approved" : "submission_rejected",
+    { submission_id: id, time_seconds: sub.time_seconds },
+    decision === "approved"
+      ? { title: "Freigegeben! 🏁", body: "Dein Lauf ist jetzt im Ranking.", url: "/race" }
+      : { title: "Lauf abgelehnt", body: "Dein Lauf wurde leider nicht freigegeben.", url: "/race" },
+  );
 
   revalidatePath("/admin/moderation");
   revalidatePath("/ranking");

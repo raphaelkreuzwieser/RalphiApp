@@ -1,23 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "@/lib/notify";
 
 export type FriendState = { error?: string; ok?: boolean };
-
-function adminOrNull() {
-  try {
-    return createAdminClient();
-  } catch {
-    return null;
-  }
-}
-
-async function notify(userId: string, type: string, payload: Record<string, unknown>) {
-  const admin = adminOrNull();
-  if (!admin) return;
-  await admin.from("notifications").insert({ user_id: userId, type, payload });
-}
 
 /* ---------------- Anfrage senden ---------------- */
 export async function sendFriendRequest(addresseeId: string): Promise<FriendState> {
@@ -47,7 +34,12 @@ export async function sendFriendRequest(addresseeId: string): Promise<FriendStat
     .insert({ requester: user.id, addressee: addresseeId, status: "pending" });
   if (error) return { error: "Anfrage konnte nicht gesendet werden." };
 
-  await notify(addresseeId, "friend_request", { requester: user.id });
+  await createNotification(
+    addresseeId,
+    "friend_request",
+    { requester: user.id },
+    { title: "Neue Freundschaftsanfrage 🤝", body: "Jemand möchte dein Freund sein.", url: "/freunde" },
+  );
   revalidatePath("/freunde");
   return { ok: true };
 }
@@ -71,7 +63,12 @@ export async function respondFriendRequest(
       .select("requester")
       .maybeSingle();
     if (error || !data) return { error: "Konnte nicht annehmen." };
-    await notify(data.requester, "friend_accepted", { by: user.id });
+    await createNotification(
+      data.requester,
+      "friend_accepted",
+      { by: user.id },
+      { title: "Anfrage angenommen 🎉", body: "Ihr seid jetzt Freunde!", url: "/freunde" },
+    );
   } else {
     const { error } = await supabase.from("friendships").delete().eq("id", friendshipId);
     if (error) return { error: "Konnte nicht ablehnen." };
