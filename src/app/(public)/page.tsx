@@ -3,6 +3,9 @@ import { Trophy, ArrowRight } from "lucide-react";
 import { LOGOS, EXTERNAL_LINKS, AGE_NOTICE } from "@/lib/assets";
 import { Card, Btn, SectionTitle } from "@/components/ui";
 import { LedTime } from "@/components/LedTime";
+import { getRanking } from "@/lib/data";
+
+export const dynamic = "force-dynamic";
 
 const STEPS = [
   { emoji: "📦", title: "Pack besorgen", text: "Hol dir das Shotrace Pack mit elektronischer Zeitmessung." },
@@ -12,8 +15,10 @@ const STEPS = [
   { emoji: "🏆", title: "Ab ins Ranking", text: "Freigegeben? Dann stehst du im offiziellen Ranking." },
 ];
 
-export default function LandingPage() {
-  const europaRekord: number | null = null; // Live aus `ranking`-View – folgt in M3.
+export default async function LandingPage() {
+  const rows = await getRanking();
+  const europaRekord: number | null = rows.length ? rows[0].time_seconds : null;
+  const topRows = rows.slice(0, 5);
 
   return (
     <div className="px-5 pb-10 pt-8">
@@ -62,12 +67,31 @@ export default function LandingPage() {
 
       {/* Öffentliches Ranking (read-only) */}
       <SectionTitle>Öffentliches Ranking</SectionTitle>
-      <Card className="flex items-center gap-3">
-        <Trophy size={20} className="text-gold" />
-        <div className="text-sm text-muted">
-          Noch keine freigegebenen Zeiten – wird live, sobald die ersten Läufe durch sind.
-        </div>
-      </Card>
+      {topRows.length === 0 ? (
+        <Card className="flex items-center gap-3">
+          <Trophy size={20} className="text-gold" />
+          <div className="text-sm text-muted">
+            Noch keine freigegebenen Zeiten – wird live, sobald die ersten Läufe durch sind.
+          </div>
+        </Card>
+      ) : (
+        topRows.map((row, i) => (
+          <Card
+            key={row.id}
+            className={`mb-2 flex items-center gap-3 ${i === 0 ? "!border-gold" : ""}`}
+          >
+            <div
+              className={`min-w-[34px] text-center font-extrabold ${
+                i < 3 ? "text-[22px]" : "text-[15px]"
+              } ${i === 0 ? "text-gold" : "text-creme"}`}
+            >
+              {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1}
+            </div>
+            <div className="flex-1 text-sm font-bold text-creme">@{row.username}</div>
+            <LedTime seconds={row.time_seconds} size="sm" className="text-lg" />
+          </Card>
+        ))
+      )}
 
       {/* App-Store-Badges (Platzhalter) */}
       <SectionTitle>Bald als App</SectionTitle>
