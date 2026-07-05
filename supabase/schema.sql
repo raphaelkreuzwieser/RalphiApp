@@ -54,14 +54,9 @@ returns boolean language sql stable security definer set search_path = public as
   select exists (select 1 from profiles where id = auth.uid() and role = 'admin');
 $$;
 
-create or replace function public.are_friends(a uuid, b uuid)
-returns boolean language sql stable security definer set search_path = public as $$
-  select exists (
-    select 1 from friendships
-    where status = 'accepted'
-      and ((requester = a and addressee = b) or (requester = b and addressee = a))
-  );
-$$;
+-- Hinweis: are_friends() wird weiter unten NACH der friendships-Tabelle
+-- definiert (es referenziert sie, und language-sql-Funktionskörper werden
+-- bereits bei der Erstellung geprüft).
 
 -- ---------- STAMMDATEN ----------
 create table public.countries (
@@ -186,6 +181,16 @@ create table public.friendships (
   unique (requester, addressee),
   check (requester <> addressee)
 );
+
+-- Bestätigte Freundschaft? (hier definiert, weil es friendships braucht)
+create or replace function public.are_friends(a uuid, b uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from friendships
+    where status = 'accepted'
+      and ((requester = a and addressee = b) or (requester = b and addressee = a))
+  );
+$$;
 
 -- ---------- DRINK CHECK-IN ----------
 create table public.checkins (
